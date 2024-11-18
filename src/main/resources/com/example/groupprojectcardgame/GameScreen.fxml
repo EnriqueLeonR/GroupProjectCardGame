@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.groupprojectcardgame.GameScreenController">
+    <top>
+        <HBox fx:id="topRow" spacing="10" style="-fx-padding: 20;" alignment="CENTER"/>
+    </top>
+    <bottom>
+        <HBox fx:id="bottomRow" spacing="10" style="-fx-padding: 20;" alignment="CENTER"/>
+    </bottom>
+    <right>
+        <VBox fx:id="rightDeck" spacing="10" style="-fx-padding: 20;" alignment="CENTER">
+            <Button text="Deck" prefWidth="80" prefHeight="120"/>
+        </VBox>
+    </right>
+</BorderPane>
