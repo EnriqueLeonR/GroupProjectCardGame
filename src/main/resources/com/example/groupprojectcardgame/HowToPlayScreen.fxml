@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.groupprojectcardgame.HowToPlayController" prefHeight="600" prefWidth="800">
+    <top>
+        <Text text="How to Play Rumik" BorderPane.alignment="CENTER">
+            <font>
+                <Font size="36" />
+            </font>
+        </Text>
+    </top>
+    <center>
+        <Text text="This is where you explain the rules of the game. Add your instructions here." wrappingWidth="700" />
+    </center>
+    <bottom>
+        <Button text="Go Back" onAction="#handleGoBack" BorderPane.alignment="BOTTOM_RIGHT" style="-fx-margin: 20;">
+            <padding>
+                <Insets bottom="10" right="20" />
+            </padding>
+        </Button>
+    </bottom>
+</BorderPane>
