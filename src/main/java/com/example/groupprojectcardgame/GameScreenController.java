@@ -15,16 +15,16 @@ public class GameScreenController {
     @FXML
     public void initialize() {
         // Add 5 cards to the top row
-        for (int i = 0; i < 5; i++) {
-            Button card = new Button("Top Card " + (i + 1));
-            card.setPrefSize(80, 120); // Set card size
+        for (int i = 1; i <= 5; i++) {
+            Button card = new Button("Card " + i); // Representing a card with a button
+            card.setPrefSize(80, 120); // Set size of the card
             topRow.getChildren().add(card);
         }
 
         // Add 5 cards to the bottom row
-        for (int i = 0; i < 5; i++) {
-            Button card = new Button("Bottom Card " + (i + 1));
-            card.setPrefSize(80, 120); // Set card size
+        for (int i = 1; i <= 5; i++) {
+            Button card = new Button("Card " + i); // Representing a card with a button
+            card.setPrefSize(80, 120); // Set size of the card
             bottomRow.getChildren().add(card);
         }
     }
