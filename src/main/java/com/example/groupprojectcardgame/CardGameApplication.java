@@ -13,7 +13,6 @@ public class CardGameApplication extends Application {
 
         
         // Load the FXML file
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/groupprojectcardgame/MenuScreen.fxml"));
         Parent root = loader.load();
 
