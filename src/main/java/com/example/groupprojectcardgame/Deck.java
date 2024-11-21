@@ -1,41 +1,60 @@
 package com.example.groupprojectcardgame;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.awt.List;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class Deck {
     private ArrayList<Card> cardList = new ArrayList<>();
 
-    public Deck() { //ArrayList<Card> cardList
-
-
-        ValueCard h2 = new ValueCard("hearts", 2, "h2",
-                "com/example/groupprojectcardgame/images/Card Folder/2HeartCardDesigns.png");
-        cardList.add(h2);
-        ValueCard h3 = new ValueCard("hearts", 3, "h3",
-                "com/example/groupprojectcardgame/images/Card Folder/3HeartCardDesigns.png");
-        cardList.add(h3);
-        ValueCard h4 = new ValueCard("hearts", 4, "h4",
-                "com/example/groupprojectcardgame/images/Card Folder/4HeartCardDesigns.png");
-        cardList.add(h4);
-        ValueCard h5 = new ValueCard("hearts", 5, "h5",
-                "com/example/groupprojectcardgame/images/Card Folder/5HeartCardDesigns.png");
-        cardList.add(h5);
-        ValueCard h6 = new ValueCard("hearts", 6, "h6",
-                "com/example/groupprojectcardgame/images/Card Folder/6HeartCardDesigns.png");
-        cardList.add(h6);
-        ValueCard h7 = new ValueCard("hearts", 7, "h7",
-                "com/example/groupprojectcardgame/images/Card Folder/7HeartCardDesigns.png");
-        cardList.add(h7);
-        ValueCard h8 = new ValueCard("hearts", 8, "h8",
-                "com/example/groupprojectcardgame/images/Card Folder/8HeartCardDesigns.png");
-        cardList.add(h8);
+    public static void main(String[] args) {
+        Deck deck = new Deck();
     }
+    public Deck() { //ArrayList<Card> cardList
+        String[] suitList = {"Heart", "Diamond", "Spade", "Club"};
+        String[] faceList = {"Ace", "Jack", "King", "Queen"};
+        int[] rankList = {2, 3, 4, 5, 6, 7, 8, 9, 10};
+        File folder = new File("src/main/resources/com/example/groupprojectcardgame/images/Card Folder");
+        String rootPath = "com/example/groupprojectcardgame/images/Card Folder/";
+
+        // Iterates through the card png folder to match each png with the associated card.
+        for (String fileName : folder.list()) {
+
+                // Matches faceCard
+                for (String f : faceList) {
+                    if (fileName.startsWith(f)) {
+                        for (String s : suitList) {
+                            if (fileName.contains(f + s)) {
+                                String cardLabel = f + s;
+                                ValueCard card = new ValueCard(s, 1, cardLabel, rootPath + fileName);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            // Matches valueCard
+            for (String s : suitList) {
+                for (int r : rankList) {
+                    String rString = String.valueOf(r);
+                    if (fileName.contains(rString + s)) {
+                        String cardLabel = rString + s;
+                        ValueCard card = new ValueCard(s, r, cardLabel, rootPath + fileName);
+                        cardList.add(card);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     public void shuffle() {
         Collections.shuffle(cardList); //built-in method that shuffles arraylists
     }
+
 
     public void removeCard(Card card) {cardList.remove(card);}
 
