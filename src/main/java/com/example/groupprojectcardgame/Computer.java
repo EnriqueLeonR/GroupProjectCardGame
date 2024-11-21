@@ -6,6 +6,7 @@ public class Computer extends Player{
         super(name, health);
     }
 
+    //will fix this later...
     public Card pickRandom(Card[] cards){
         return cards[(int)(Math.random()*cards.length)];
     }

@@ -4,11 +4,13 @@ public class Card {
     private String suit;
     private int rank;
     private String label;
+    private String src;
 
-    public Card(String suit, int rank, String label) {
+    public Card(String suit, int rank, String label, String src) {
         this.suit = suit;
         this.rank = rank;
         this.label = label;
+        this.src = src;
     }
 
     public String getSuit() {return this.suit;}
@@ -16,6 +18,10 @@ public class Card {
     public int getRank() {return this.rank;}
 
     public String getLabel() {return this.label;}
+
+    public String getSrc(){
+        return this.src;
+    }
 
     public void setSuit(String suit){
         this.suit = suit;

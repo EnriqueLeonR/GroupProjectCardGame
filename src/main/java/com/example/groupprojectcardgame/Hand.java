@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Hand extends Deck{
 
-    public Hand(ArrayList<Card> cardList) {
-        super(cardList);
+    public Hand() {//ArrayList<Card> cardList
+        //super(cardList);
     }
 
     @Override
