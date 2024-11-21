@@ -28,7 +28,8 @@ public class Deck {
                         for (String s : suitList) {
                             if (fileName.contains(f + s)) {
                                 String cardLabel = f + s;
-                                ValueCard card = new ValueCard(s, 1, cardLabel, rootPath + fileName);
+                                FaceCard card = new FaceCard(s, 1, cardLabel, rootPath + fileName);
+                                cardList.add(card);
                                 break;
                             }
                         }
