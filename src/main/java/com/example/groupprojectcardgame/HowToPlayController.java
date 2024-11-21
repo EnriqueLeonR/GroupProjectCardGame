@@ -15,7 +15,8 @@ public class HowToPlayController {
     private void handleGoBack(ActionEvent event) {
         try {
             // Load the Menu Screen FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/groupprojectcardgame/MenuScreen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/example/groupprojectcardgame/MenuScreen.fxml"));
             Parent menuScreenRoot = loader.load();
 
             // Get the current stage from the event source

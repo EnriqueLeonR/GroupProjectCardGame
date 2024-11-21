@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
@@ -32,74 +31,76 @@ public class GameScreenController {
     private Player user = new Player("User", 1000);
     private Computer comp = new Computer("CPU", 1000);
 
+
     @FXML
     public void initialize() {
         // Resizes the backgroud image to the size of the window
         imagePane.fitWidthProperty().bind(rootPane.widthProperty());
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
 
+
         // Add 5 cards to the top row
-        Button[] top = new Button[5];
+        Button[] topRow = new Button[5];
         for (int i = 1; i <= 5; i++) {
-            Button card = new Button("Card " + i); // Representing a card with a button
-            card.setPrefSize(80, 120);
-            card.setId("null"); //card id pairs with card label
-            card.setText(""); //remove text for only image
-            card.setDisable(true); //disable user control
+            Button cardButton = new Button("Card " + i); // Representing a card with a button
+            cardButton.setPrefSize(80, 120);
+            cardButton.setId("null"); //card id pairs with card label
+            cardButton.setText(""); //remove text for only image
+            cardButton.setDisable(true); //disable user control
 
             //attach img to button
             Image img = new Image("com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
             ImageView view = new ImageView(img);
-            view.setFitHeight(card.getPrefHeight());
-            view.setFitWidth(card.getPrefWidth());
-            card.setGraphic(view);
+            view.setFitHeight(cardButton.getPrefHeight());
+            view.setFitWidth(cardButton.getPrefWidth());
+            cardButton.setGraphic(view);
 
             //add button to button array
-            top[i-1] = card;
+            topRow[i-1] = cardButton;
 
             //add button
-            topRow.getChildren().add(card);
+            this.topRow.getChildren().add(cardButton);
         }
 
         // Add 5 cards to the bottom row
-        Button[] bottom = new Button[5];
+        Button[] bottomRow = new Button[5];
         for (int i = 1; i <= 5; i++) {
-            Button card = new Button("Card " + i); // Representing a card with a button
-            card.setPrefSize(80, 120);
-            card.setId("null");
-            card.setText("");
+            Button cardButton = new Button("Card " + i); // Representing a card with a button
+            cardButton.setPrefSize(80, 120);
+            cardButton.setId("null");
+            cardButton.setText("");
 
             //set the button action to 'select' the card
-            card.setOnAction(actionEvent ->{
-                selectCard(card);
+            cardButton.setOnAction(actionEvent ->{
+                selectCard(cardButton);
 
                 //the following is for testing. Pick 2 random cards to replace
                 if(selectedHand.size()==2){
-                    testHand(bottom);
+                    testHand(bottomRow);
                 }
             });
 
             //add button to hand
-            bottom[i-1] = card;
+            bottomRow[i-1] = cardButton;
 
             //attach img to button
             Image img = new Image("com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
             ImageView view = new ImageView(img);
-            view.setFitHeight(card.getPrefHeight());
-            view.setFitWidth(card.getPrefWidth());
-            card.setGraphic(view);
+            view.setFitHeight(cardButton.getPrefHeight());
+            view.setFitWidth(cardButton.getPrefWidth());
+            cardButton.setGraphic(view);
 
             //add button
-            bottomRow.getChildren().add(card);
+            this.bottomRow.getChildren().add(cardButton);
         }
 
-
         deck.shuffle();
-        dealCards(bottom); //give shuffled cards to player
+        dealCards(bottomRow); //give shuffled cards to player
         //dealCards(top); //uncomment when deck is complete
 
 
     }
+
 
     //method to take a Card's src and display on button
     public void setImage(Button button, Card card){
@@ -109,6 +110,7 @@ public class GameScreenController {
         view.setFitWidth(button.getPrefWidth());
         button.setGraphic(view);
     }
+
 
     //method to deal random cards (breaks if 7+ are dealt)
     public void dealCards(Button[] hand){
@@ -122,6 +124,7 @@ public class GameScreenController {
         }
     }
 
+
     //method to find the Card associated with the button. Allows user to select/deselect cards
     public void selectCard(Button button){
         Card card = fullDeck.getCard(button.getId());
@@ -134,6 +137,7 @@ public class GameScreenController {
         System.out.println(selectedHand); //for testing
     }
 
+
     //method that test selected cards
     public void testHand(Button[] hand){
         //use cards in selected hand to do actions here
@@ -144,7 +148,8 @@ public class GameScreenController {
             if(selectedHand.contains(card)){
                 button.setId("null");
                 button.setDisable(true);
-                Card blank = new Card("none", 0, "na", "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                Card blank = new Card("none", 0, "na",
+                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
                 setImage(button, blank);
             }
         }
