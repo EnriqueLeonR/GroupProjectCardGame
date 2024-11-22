@@ -14,7 +14,7 @@
             <Image url="@images/tableView.jpg" />
         </image>
     </ImageView>
-    <BorderPane>
+    <BorderPane fx:id="borderPane">
         <top>
             <HBox fx:id="topRow" alignment="CENTER" spacing="10" style="-fx-padding: 20;">
             <BorderPane.margin>
@@ -31,7 +31,7 @@
             <StackPane fx:id="rightStackPane" prefHeight="419.0" prefWidth="151.0" BorderPane.alignment="CENTER" />
         </right>
         <center>
-            <Button fx:id="submit" BorderPane.alignment="CENTER" text="Submit Hand"/>
+            <Button fx:id="submit" text="Submit Hand" BorderPane.alignment="CENTER" />
         </center>
     </BorderPane>
 </StackPane>

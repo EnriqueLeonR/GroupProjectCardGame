@@ -1,13 +1,21 @@
 package com.example.groupprojectcardgame;
 
+import javafx.animation.Interpolator;
+import javafx.animation.PathTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 
@@ -24,6 +32,9 @@ public class GameScreenController {
 
     @FXML
     private ImageView imagePane;
+
+    @FXML
+    private BorderPane borderPane;
 
     @FXML
     private StackPane rightStackPane;
@@ -143,6 +154,39 @@ public class GameScreenController {
     }
 
 
+    public void dealAnimation(Card card, StackPane startLocation, Button endLocation) {
+        Platform.runLater(() -> {
+            System.out.println("StackPane Size: " + rootPane.getWidth() + " x " + rootPane.getHeight());
+            Path path = new Path();
+            Button placeholder = new Button();
+
+            ObservableList<Node> StackPaneChild = startLocation.getChildren();
+            Node button = StackPaneChild.getFirst();
+            double startX = button.localToScene(0, 0).getX();
+            double startY = button.localToScene(0, 0).getY();
+
+            // Get the end position in scene coordinates
+            double endX = endLocation.localToScene(0, 0).getX();
+            double endY = endLocation.localToScene(0, 0).getY();
+
+            // Define the animation path
+            path.getElements().add(new MoveTo(startX, startY)); // Starting point
+            path.getElements().add(new LineTo(endX, endY));
+            placeholder.setPrefSize(80, 120);
+            setImage(placeholder, card);
+            placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
+
+            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, ROOTPANE WAS MY WHOLE ISSUE
+            borderPane.getChildren().add(placeholder);
+            PathTransition transition = new PathTransition(Duration.seconds(2), path, placeholder);
+            transition.setInterpolator(Interpolator.LINEAR);
+            System.out.println("Animation Start: " + startX + ", " + startY);
+            System.out.println("Animation End: " + endX + ", " + endY);
+            transition.play();
+        });
+    }
+
+
     // Method deals cards to each specific hand/row ie- either the top or bottom row
     public void dealCards(HBox location, boolean disable) {
         ObservableList<Node> buttons = location.getChildren();
@@ -155,6 +199,7 @@ public class GameScreenController {
                     button.setDisable(false);
                     setImage((Button) button, card);
                 }
+                dealAnimation(card, rightStackPane, (Button) button);
             }
         }
     }
