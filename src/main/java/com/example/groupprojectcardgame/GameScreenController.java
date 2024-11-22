@@ -1,12 +1,13 @@
 package com.example.groupprojectcardgame;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 
@@ -38,17 +39,17 @@ public class GameScreenController {
 
     @FXML
     public void initialize() {
-        // Resizes the backgroud image to the size of the window
+        // Resizes the backgroud image to the size of the window ie- allows fullscreen
         imagePane.fitWidthProperty().bind(rootPane.widthProperty());
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
 
-        // Adds the 5 cards to top and bottom rows
-        Button[] buttons = new Button[5];
-        addButtons(buttons, topRow);
-        addButtons(buttons, bottomRow);
+        // Initializes the 5 card buttons to the top and bottom rows
+        addButtons(topRow);
+        addButtons(bottomRow);
         addDeck(rightStackPane);
 
-        dealCards(buttons); //give shuffled cards to player
+        dealCards(topRow); //give shuffled cards to player
+        dealCards(bottomRow);
         //dealCards(top); //uncomment when deck is complete
     }
 
@@ -74,8 +75,9 @@ public class GameScreenController {
     }
 
 
-    public void addButtons(Button[] row, HBox location) {
+    public void addButtons(HBox location) {
         // Add 5 cards to the row
+        Button[] buttons = new Button[5];
         for (int i = 1; i <= 5; i++) {
             Button cardButton = new Button("Card " + i); // Representing a card with a button
             cardButton.setPrefSize(80, 120);
@@ -91,14 +93,14 @@ public class GameScreenController {
             cardButton.setGraphic(view);
 
             //add button to button array
-            row[i-1] = cardButton;
+            buttons[i-1] = cardButton;
 
             cardButton.setOnAction(actionEvent -> {
                         selectCard(cardButton);
 
                         //the following is for testing. Pick 2 random cards to replace
                         if (selectedHand.size() == 2) {
-                            testHand(row);
+                            testHand(buttons);
                         }
                     });
 
@@ -118,14 +120,30 @@ public class GameScreenController {
     }
 
 
-    //method to deal random cards (breaks if 7+ are dealt)
-    public void dealCards(Button[] hand){
-        for (Button button : hand) {
+    //method to deals cards in the testHand method, may try to fix testhand to use the same method
+    // (but it's working and don't wanna touch it lol)
+    public void dealCards(Button[] row){
+        for (Button button : row) {
             if(button.getId().equals("null")) { //for every empty button, add Card vars to button
                 Card card = deck.draw();
                 button.setDisable(false);
                 button.setId(card.getLabel());
                 setImage(button, card);
+            }
+        }
+    }
+
+
+    // Method deals cards to each specific hand/row ie- either the top or bottom row
+    public void dealCards(HBox location) {
+        ObservableList<Node> buttons = location.getChildren();
+        for (Node button : buttons) {
+            if(button.getId().equals("null")) { //for every empty button, add Card vars to button
+                Card card = deck.draw();
+                System.out.print(deck.size());
+                button.setDisable(false);
+                button.setId(card.getLabel());
+                setImage((Button) button, card);
             }
         }
     }
