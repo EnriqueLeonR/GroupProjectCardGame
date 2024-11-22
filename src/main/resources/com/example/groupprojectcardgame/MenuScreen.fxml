@@ -5,39 +5,37 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="615.0" prefWidth="342.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.groupprojectcardgame.MenuScreenController">
-    <!-- Background Image -->
-    <ImageView fitHeight="615.0" fitWidth="342.0" preserveRatio="true">
+<StackPane prefHeight="440.0" prefWidth="775.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.groupprojectcardgame.MenuScreenController">
+    <ImageView fitHeight="497.0" fitWidth="775.0" preserveRatio="true">
         <image>
-            <Image url="@images/10HeartsCardDesigns.jpg" />
+            <Image url="@images/Background%20Folder/logorender1.jpg" />
         </image>
     </ImageView>
-
-    <!-- Content Layout -->
-    <BorderPane style="-fx-border-color: green; -fx-border-width: 4;">
-        <!-- Title -->
+    <BorderPane prefHeight="689.0" prefWidth="685.0" style="-fx-border-color: black; -fx-border-width: 4;">
         <top>
-            <Text fontSmoothingType="LCD" text="Welcome To Rumik" textAlignment="CENTER" wrappingWidth="300.0" BorderPane.alignment="CENTER">
+            <Text fontSmoothingType="LCD" text="WELCOME TO" textAlignment="CENTER" wrappingWidth="613.0" BorderPane.alignment="CENTER">
                 <font>
-                    <Font size="38.0" />
+                    <Font size="81.0" />
                 </font>
             </Text>
         </top>
-
-        <!-- Buttons -->
         <center>
-            <VBox alignment="CENTER" spacing="15">
-                <Button onAction="#handleStartGame" prefHeight="42.0" prefWidth="115.0" text="Play Game" />
-                <Button onAction="#handleHowToPlay" prefHeight="42.0" prefWidth="110.0" text="How To Play" />
-            </VBox>
+            <Pane prefHeight="284.0" prefWidth="677.0">
+                <Button layoutX="456.0" layoutY="189.0" onAction="#handleHowToPlay" prefHeight="52.0" prefWidth="147.0" text="How To Play">
+               <font>
+                  <Font size="21.0" />
+               </font></Button>
+                <Button layoutX="102.0" layoutY="188.0" onAction="#handleStartGame" prefHeight="54.0" prefWidth="149.0" text="Play Game">
+               <font>
+                  <Font size="21.0" />
+               </font></Button>
+            </Pane>
         </center>
-
-        <!-- Padding -->
         <padding>
             <Insets bottom="20" left="20" right="20" top="20" />
         </padding>
