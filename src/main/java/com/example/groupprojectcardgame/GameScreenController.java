@@ -185,7 +185,7 @@ public class GameScreenController {
 
             // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
             borderPane.getChildren().add(placeholder);
-            PathTransition transition = new PathTransition(Duration.seconds(0.75), path, placeholder);
+            PathTransition transition = new PathTransition(Duration.seconds(0.9), path, placeholder);
             transition.setInterpolator(Interpolator.LINEAR);
             transition.play();
             transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
