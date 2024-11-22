@@ -30,5 +30,8 @@
         <right>
             <StackPane fx:id="rightStackPane" prefHeight="419.0" prefWidth="151.0" BorderPane.alignment="CENTER" />
         </right>
+        <center>
+            <Button fx:id="submit" BorderPane.alignment="CENTER" text="Submit Hand"/>
+        </center>
     </BorderPane>
 </StackPane>
