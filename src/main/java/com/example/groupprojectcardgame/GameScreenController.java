@@ -8,6 +8,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -51,6 +53,34 @@ public class GameScreenController {
         dealCards(topRow); //give shuffled cards to player
         dealCards(bottomRow);
         //dealCards(top); //uncomment when deck is complete
+
+        // Create separate containers for health bars
+        StackPane computerHealthBarContainer = new StackPane();
+        StackPane playerHealthBarContainer = new StackPane();
+
+        Rectangle computerHealthBar = comp.getHealthBar();
+        Rectangle playerHealthBar = user.getHealthBar();
+
+        // Add health bars to containers
+        computerHealthBarContainer.getChildren().add(computerHealthBar);
+        playerHealthBarContainer.getChildren().add(playerHealthBar);
+
+        computerHealthBar.widthProperty().bind(rootPane.widthProperty().multiply(0.2));
+        playerHealthBar.widthProperty().bind(rootPane.widthProperty().multiply(0.2));
+
+        // Set mouseTransparent property to true
+        computerHealthBarContainer.setMouseTransparent(true);
+        playerHealthBarContainer.setMouseTransparent(true);
+
+        // Add containers to game screen
+        rootPane.getChildren().add(computerHealthBarContainer);
+        rootPane.getChildren().add(playerHealthBarContainer);
+
+        // Position health bar containers
+        computerHealthBarContainer.setTranslateX(10);
+        computerHealthBarContainer.setTranslateY(topRow.getBoundsInParent().getMinY() - 120); // Move up by 80 pixels
+        playerHealthBarContainer.setTranslateX(10);
+        playerHealthBarContainer.setTranslateY(bottomRow.getBoundsInParent().getMaxY() + 120); // Move down by 80 pixels
     }
 
 
@@ -181,4 +211,6 @@ public class GameScreenController {
         selectedHand.clear(); //clear selected cards
         dealCards(hand); //deal new cards to player
     }
+
+
 }
