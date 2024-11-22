@@ -28,14 +28,25 @@ public class GameScreenController {
     @FXML
     private StackPane rightStackPane;
 
+    @FXML
+    private Button submit;
+
     private Deck fullDeck = new Deck(); //reference full card deck
     private Deck deck = new Deck(); //deck used for game
     private ArrayList<Card> selectedHand = new ArrayList<>(); //selected hand to keep track of cards
 
     //init players
-    private Player user = new Player("User", 1000);
-    private Computer comp = new Computer("CPU", 1000);
+    private Player user = new Player("User", 100);
+    private Computer comp = new Computer("CPU", 100);
 
+    private enum Status{
+        START,
+        END,
+        P1,
+        P2
+    }
+
+    private Status gameStatus = Status.START;
 
     @FXML
     public void initialize() {
@@ -44,13 +55,29 @@ public class GameScreenController {
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
 
         // Initializes the 5 card buttons to the top and bottom rows
-        addButtons(topRow);
-        addButtons(bottomRow);
+        Button[] topButtons = addButtons(topRow);
+        Button[] bottomButtons = addButtons(bottomRow);
         addDeck(rightStackPane);
 
-        dealCards(topRow); //give shuffled cards to player
-        dealCards(bottomRow);
-        //dealCards(top); //uncomment when deck is complete
+        //setup submit hand button
+        submit.setVisible(false);
+        submit.setOnAction(actionEvent -> {
+            testHand(bottomRow);
+        });
+
+        dealCards(topRow, true); //second parameter hides the deck
+        dealCards(bottomRow, false);
+
+        pickStarter();
+        //gameStatus = Status.P1; //test code
+
+        //while(gameStatus != Status.END){
+          if(gameStatus == Status.P1){ //run for user turn
+              turn(user);
+          } else if(gameStatus == Status.P2){ //run for cpu 1 turn
+              turn(comp);
+          }
+        //}
     }
 
 
@@ -75,7 +102,7 @@ public class GameScreenController {
     }
 
 
-    public void addButtons(HBox location) {
+    public Button[] addButtons(HBox location) {
         // Add 5 cards to the row
         Button[] buttons = new Button[5];
         for (int i = 1; i <= 5; i++) {
@@ -97,16 +124,12 @@ public class GameScreenController {
 
             cardButton.setOnAction(actionEvent -> {
                         selectCard(cardButton);
-
-                        //the following is for testing. Pick 2 random cards to replace
-                        if (selectedHand.size() == 2) {
-                            testHand(buttons);
-                        }
                     });
 
             //add button
             location.getChildren().add(cardButton);
         }
+        return buttons;
     }
 
 
@@ -120,30 +143,18 @@ public class GameScreenController {
     }
 
 
-    //method to deals cards in the testHand method, may try to fix testhand to use the same method
-    // (but it's working and don't wanna touch it lol)
-    public void dealCards(Button[] row){
-        for (Button button : row) {
-            if(button.getId().equals("null")) { //for every empty button, add Card vars to button
-                Card card = deck.draw();
-                button.setDisable(false);
-                button.setId(card.getLabel());
-                setImage(button, card);
-            }
-        }
-    }
-
-
     // Method deals cards to each specific hand/row ie- either the top or bottom row
-    public void dealCards(HBox location) {
+    public void dealCards(HBox location, boolean disable) {
         ObservableList<Node> buttons = location.getChildren();
         for (Node button : buttons) {
             if(button.getId().equals("null")) { //for every empty button, add Card vars to button
                 Card card = deck.draw();
-                System.out.print(deck.size());
-                button.setDisable(false);
+                System.out.print(deck.size()); //testing
                 button.setId(card.getLabel());
-                setImage((Button) button, card);
+                if(!disable){
+                    button.setDisable(false);
+                    setImage((Button) button, card);
+                }
             }
         }
     }
@@ -158,27 +169,113 @@ public class GameScreenController {
         } else{
             selectedHand.add(card);
         }
+
+        if(!selectedHand.isEmpty()){
+            submit.setVisible(true);
+        } else{
+            submit.setVisible(false);
+        }
         System.out.println(selectedHand); //for testing
     }
 
 
     //method that test selected cards
-    public void testHand(Button[] hand){
+    public void testHand(HBox location){
         //use cards in selected hand to do actions here
 
         //if a hand is valid
-        for(Button button:hand){ //find cards in players hand and remove them
+        ObservableList<Node> hand = location.getChildren();
+        for(Node button:hand){ //find cards in players hand and remove them
             Card card = fullDeck.getCard(button.getId());
             if(selectedHand.contains(card)){
                 button.setId("null");
                 button.setDisable(true);
                 Card blank = new Card("none", 0, "na",
                         "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
-                setImage(button, blank);
+                setImage((Button) button, blank);
             }
         }
 
+        submit.setVisible(false);
         selectedHand.clear(); //clear selected cards
-        dealCards(hand); //deal new cards to player
+        dealCards(location, false); //deal new cards to player
+
+        if(gameStatus == Status.P1) {
+            turn(comp);
+        }
+    }
+
+    public void pickStarter(){
+        int random = (int)(Math.random()*2);
+        //System.out.println(random);
+        switch (random){
+            case 0:
+                gameStatus = Status.P1;
+                System.out.println(user.getName()+" starts!");
+                break;
+            case 1:
+                gameStatus = Status.P2;
+                System.out.println(comp.getName()+ " starts!");
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void turn(Player player){
+        if(player.getName().equals("User")){
+            gameStatus = Status.P1;
+            dealCards(bottomRow, false);
+        }else{
+            if(comp.getHealthPoints()>0) {
+                gameStatus = Status.P2;
+                dealCards(bottomRow, true);
+                dealCards(topRow, true);
+                System.out.println("comp round"); //for testing
+
+                //convert comp buttons to cards
+                ObservableList<Node> hand = topRow.getChildren();
+                ArrayList<Card> cards = new ArrayList<>();
+                for(int index = 0; index<5; index++){
+                    cards.add(fullDeck.getCard(hand.get(index).getId())); //<<
+                }
+                System.out.println(cards); //returns comp cards for testing
+
+                //pass cards and return hand dmg
+                int dmg = comp.pickRandom(cards);
+                user.setHealth(user.getHealthPoints()-dmg);
+                System.out.println(user.getHealthPoints());
+
+                //remove cards from comp hand
+                System.out.println(cards);
+                ObservableList<Node> top = topRow.getChildren();
+                for(Node button:top){ //find cards in players hand and remove them
+                    Card card = fullDeck.getCard(button.getId());
+                    if(cards.contains(card)){
+                        button.setId("null");
+                        button.setDisable(true);
+                        Card blank = new Card("none", 0, "na",
+                                "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                        setImage((Button) button, blank);
+                    }
+                }
+                dealCards(topRow, true); //for testing
+
+                if (user.getHealthPoints() > 0) {
+                   turn(user);
+
+                } else {
+                    announceWinner(comp);
+                }
+            } else{
+                announceWinner(user);
+            }
+        }
+    }
+
+    public void announceWinner(Player player){
+        //change endscreen
+        gameStatus = Status.END;
+        System.out.println(player.getName()+ " is the winner!");
     }
 }
