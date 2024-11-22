@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 
 <StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.groupprojectcardgame.GameScreenController">
     <ImageView fx:id="imagePane" fitHeight="615.0" fitWidth="800.0" preserveRatio="false">
@@ -29,9 +28,7 @@
             </BorderPane.margin></HBox>
         </bottom>
         <right>
-            <VBox fx:id="rightDeck" alignment="CENTER" spacing="10" style="-fx-padding: 20;">
-                <Button prefHeight="120" prefWidth="80" text="Deck" />
-            </VBox>
+            <StackPane fx:id="rightStackPane" prefHeight="419.0" prefWidth="151.0" BorderPane.alignment="CENTER" />
         </right>
     </BorderPane>
 </StackPane>
