@@ -198,6 +198,10 @@ public class GameScreenController {
         ObservableList<Node> buttons = location.getChildren();
         for (Node button : buttons) {
             if(button.getId().equals("null")) { //for every empty button, add Card vars to button
+                if(deck.size() <= 0){
+                    deck = new Deck(); //this will refill the deck, rarely causes issues
+                    deck.shuffle();
+                }
                 Card card = deck.draw();
                 System.out.print(deck.size()); //testing
                 button.setId(card.getLabel());
@@ -217,8 +221,10 @@ public class GameScreenController {
         //System.out.println(card.getSrc());
         if(selectedHand.contains(card)){
             selectedHand.remove(card);
+            button.setStyle("-fx-border-width: 0;");
         } else{
             selectedHand.add(card);
+            button.setStyle("-fx-border-color: #c2f0ee; -fx-border-width: 5px;");
         }
 
         if(!selectedHand.isEmpty()){
@@ -239,6 +245,7 @@ public class GameScreenController {
         for(Node button:hand){ //find cards in players hand and remove them
             Card card = fullDeck.getCard(button.getId());
             if(selectedHand.contains(card)){
+                button.setStyle("-fx-border-width: 0;");
                 button.setId("null");
                 button.setDisable(true);
                 Card blank = new Card("none", 0, "na",
