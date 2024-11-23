@@ -4,17 +4,19 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.control.ProgressBar;
 
 public class Player {
     private String name;
     private double health;
-    private Rectangle healthBar;
+    private ProgressBar healthBar;
 
     Player(String name, double health){
         this.name = name;
         this.health = health;
-        this.healthBar = createHealthBar();
-
+        this.healthBar = new ProgressBar();
+        this.healthBar.setProgress(1.0);// Initialize progress to 1.0 (full health)
+        this.healthBar.setPrefWidth(400); // Set the preferred width to 200
     }
 
     public String getName() {return this.name;}
@@ -25,20 +27,14 @@ public class Player {
 
     public void setHealth(double health) {this.health = health;}
 
-    public Rectangle getHealthBar() {return this.healthBar;}
-
-    private Rectangle createHealthBar() {
-        Rectangle healthBar = new Rectangle(0, 0, 100, 20);
-        healthBar.setFill(Color.DARKRED);
-
-        // Bind health bar width to player's health
-        healthBar.widthProperty().bind(healthProperty().multiply(100.0 / 1000.0));
-
-        return healthBar;
-    }
+    public ProgressBar getHealthBar() {return this.healthBar;}
 
     public DoubleProperty healthProperty() {
         return new SimpleDoubleProperty(health);
+    }
+
+    public void updateHealthBar() {
+        healthBar.setProgress(getHealthPoints() / 100.0);
     }
 
     @Override
