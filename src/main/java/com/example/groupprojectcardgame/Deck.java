@@ -1,20 +1,17 @@
 package com.example.groupprojectcardgame;
 
-import java.awt.List;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
+
 
 public class Deck {
     private ArrayList<Card> cardList = new ArrayList<>();
 
-    public static void main(String[] args) {
-        Deck deck = new Deck();
-    }
     public Deck() { //ArrayList<Card> cardList
         String[] suitList = {"Heart", "Diamond", "Spade", "Club"};
-        String[] faceList = {"Ace", "Jack", "King", "Queen"};
+        Map<String, Integer> faceList = Map.of(
+                "Ace", 1, "Jack", 11, "Queen", 12, "King", 13);
+
         int[] rankList = {2, 3, 4, 5, 6, 7, 8, 9, 10};
         File folder = new File("src/main/resources/com/example/groupprojectcardgame/images/Card Folder");
         String rootPath = "com/example/groupprojectcardgame/images/Card Folder/";
@@ -22,19 +19,19 @@ public class Deck {
         // Iterates through the card png folder to match each png with the associated card.
         for (String fileName : folder.list()) {
 
-                // Matches faceCard
-                for (String f : faceList) {
-                    if (fileName.startsWith(f)) {
-                        for (String s : suitList) {
-                            if (fileName.contains(f + s)) {
-                                String cardLabel = f + s;
-                                FaceCard card = new FaceCard(s, 1, cardLabel, rootPath + fileName);
-                                cardList.add(card);
-                                break;
-                            }
+            // Matches faceCard
+            for (String f : faceList.keySet()) {
+                if (fileName.startsWith(f)) {
+                    for (String s : suitList) {
+                        if (fileName.contains(f + s)) {
+                            String cardLabel = f + s;
+                            FaceCard card = new FaceCard(s, faceList.get(f), cardLabel, rootPath + fileName);
+                            cardList.add(card);
+                            break;
                         }
                     }
                 }
+            }
 
             // Matches valueCard
             for (String s : suitList) {

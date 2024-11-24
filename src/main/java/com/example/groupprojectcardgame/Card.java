@@ -1,5 +1,9 @@
 package com.example.groupprojectcardgame;
 
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 public class Card {
     private String suit;
     private int rank;
@@ -12,6 +16,17 @@ public class Card {
         this.label = label;
         this.src = src;
     }
+
+
+    //method to take a Card's src and display on button
+    public static void setImage(Button button, Card card){
+        Image img = new Image(card.getSrc());
+        ImageView view = new ImageView(img);
+        view.setFitHeight(button.getPrefHeight());
+        view.setFitWidth(button.getPrefWidth());
+        button.setGraphic(view);
+    }
+
 
     public String getSuit() {return this.suit;}
 
@@ -37,7 +52,7 @@ public class Card {
 
     @Override
     public String toString() {
-        return String.format("%s%s%n%s%s%n%s%s",
+        return String.format("%s%s%n%s%s%n%s%s%n",
                 "Suit: ", this.suit,
                 "Rank: ", this.rank,
                 "label: ", this.label);

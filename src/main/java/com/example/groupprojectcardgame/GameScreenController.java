@@ -1,8 +1,5 @@
 package com.example.groupprojectcardgame;
 
-import javafx.animation.Interpolator;
-import javafx.animation.PathTransition;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -12,15 +9,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
-import javafx.scene.control.ProgressBar;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static com.example.groupprojectcardgame.Animation.*;
+import static com.example.groupprojectcardgame.Card.setImage;
+import static com.example.groupprojectcardgame.Player.updateHealthBar;
+import static com.example.groupprojectcardgame.Player.updateHealthText;
+
 
 public class GameScreenController {
 
@@ -65,6 +61,7 @@ public class GameScreenController {
 
     private Status gameStatus = Status.START;
 
+
     @FXML
     public void initialize() {
 
@@ -79,7 +76,6 @@ public class GameScreenController {
         Button[] topButtons = addButtons(topRow);
         Button[] bottomButtons = addButtons(bottomRow);
         addDeck(rightStackPane);
-
 
         //dealCards(top); //uncomment when deck is complete
 
@@ -100,11 +96,24 @@ public class GameScreenController {
         //while(gameStatus != Status.END){
           if(gameStatus == Status.P1){ //run for user turn
               turn(user);
-          } else if(gameStatus == Status.P2){ //run for cpu 1 turn
+          }
+          else if(gameStatus == Status.P2) { //run for cpu 1 turn
               turn(comp);
+          }
+
+          // Determines winner and displays the appropriate animation
+          if (user.getHealthPoints() == 0 || comp.getHealthPoints() == 0) {
+              gameStatus = Status.END;
+              if (user.getHealthPoints() > comp.getHealthPoints()) {
+                  announceWinner(user);
+              }
+              else {
+                  announceWinner(comp);
+              }
           }
         //}
     }
+
 
     private void createHealthBars() {
         // Create separate containers for health bars
@@ -119,6 +128,10 @@ public class GameScreenController {
         computerHealthBarContainer.setMouseTransparent(true);
         playerHealthBarContainer.setMouseTransparent(true);
 
+        // Set health bar text
+        computerHealthBarContainer.getChildren().add(comp.getPlayerHealthText());
+        playerHealthBarContainer.getChildren().add(user.getPlayerHealthText());
+
         // Add containers to game screen
         rootPane.getChildren().add(computerHealthBarContainer);
         rootPane.getChildren().add(playerHealthBarContainer);
@@ -129,6 +142,7 @@ public class GameScreenController {
         playerHealthBarContainer.setTranslateX(10);
         playerHealthBarContainer.setTranslateY(bottomRow.getBoundsInParent().getMaxY() + 120); // Move down by 80 pixels
     }
+
 
     public void addDeck(StackPane location) {
         deck.shuffle();
@@ -145,6 +159,7 @@ public class GameScreenController {
             view.setFitHeight(cardButton.getPrefHeight());
             view.setFitWidth(cardButton.getPrefWidth());
             cardButton.setGraphic(view);
+            cardButton.setStyle("-fx-background-color: transparent;");
 
             location.getChildren().add(cardButton);
         }
@@ -182,55 +197,6 @@ public class GameScreenController {
     }
 
 
-    //method to take a Card's src and display on button
-    public void setImage(Button button, Card card){
-        Image img = new Image(card.getSrc());
-        ImageView view = new ImageView(img);
-        view.setFitHeight(button.getPrefHeight());
-        view.setFitWidth(button.getPrefWidth());
-        button.setGraphic(view);
-    }
-
-
-    public void dealAnimation(Card card, StackPane startLocation, Button endLocation, Boolean disable) {
-        Platform.runLater(() -> {
-            Path path = new Path();
-            Button placeholder = new Button();
-
-            // Get start position
-            ObservableList<Node> StackPaneChild = startLocation.getChildren();
-            Node button = StackPaneChild.getFirst();
-            double startX = button.localToScene(0, 0).getX();
-            double startY = button.localToScene(0, 0).getY();
-
-            // Get end position
-            double endX = endLocation.localToScene(0, 0).getX();
-            double endY = endLocation.localToScene(0, 0).getY();
-
-            // Define the animation path
-            path.getElements().add(new MoveTo(startX, startY)); // Starting point
-            path.getElements().add(new LineTo(endX + 49, endY + 65));
-            placeholder.setPrefSize(80, 120);
-            if (disable.equals(true)) {
-                Card blank = new Card("none", 0, "na",
-                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
-                setImage(placeholder, blank);
-            }
-            else {
-                setImage(placeholder, card);
-            }
-            placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
-
-            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
-            borderPane.getChildren().add(placeholder);
-            PathTransition transition = new PathTransition(Duration.seconds(0.9), path, placeholder);
-            transition.setInterpolator(Interpolator.LINEAR);
-            transition.play();
-            transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
-        });
-    }
-
-
     // Method deals cards to each specific hand/row ie- either the top or bottom row
     public void dealCards(HBox location, boolean disable) {
         ObservableList<Node> buttons = location.getChildren();
@@ -243,11 +209,12 @@ public class GameScreenController {
                 Card card = deck.draw();
                 System.out.print(deck.size()); //testing
                 button.setId(card.getLabel());
+                button.setStyle("-fx-background-color: transparent;");
                 if(!disable){
                     button.setDisable(false);
                     setImage((Button) button, card);
                 }
-                dealAnimation(card, rightStackPane, (Button) button, disable);
+                dealAnimation(card, rightStackPane, (Button) button, disable, borderPane);
             }
         }
     }
@@ -259,7 +226,7 @@ public class GameScreenController {
         //System.out.println(card.getSrc());
         if(selectedHand.contains(card)){
             selectedHand.remove(card);
-            button.setStyle("-fx-border-width: 0;");
+            button.setStyle("-fx-background-color: transparent;");
         } else{
             selectedHand.add(card);
             button.setStyle("-fx-border-color: #c2f0ee; -fx-border-width: 5px;");
@@ -275,8 +242,13 @@ public class GameScreenController {
 
 
     //method that test selected cards
-    public void testHand(HBox location){
-        //use cards in selected hand to do actions here
+    public void testHand(HBox location) {
+        Action action = new Action();
+        double dmg = action.calculateDamage(selectedHand);
+        if (selectedHand.size() == 1) {
+            dmg = selectedHand.getFirst().getRank();
+        }
+        System.out.println(dmg);
 
         //if a hand is valid
         ObservableList<Node> hand = location.getChildren();
@@ -314,7 +286,33 @@ public class GameScreenController {
         if(gameStatus == Status.P1) {
             turn(comp);
         }
+        if (dmg > 0) {
+            updateHealthBar(comp, dmg);
+            updateHealthText(comp);
+            ObservableList<Node> hand = location.getChildren();
+            for (Node button : hand) { //find cards in players hand and remove them
+                Card card = fullDeck.getCard(button.getId());
+                if (selectedHand.contains(card)) {
+                    button.setStyle("-fx-border-width: 0;");
+                    button.setId("null");
+                    button.setDisable(true);
+                    Card blank = new Card("none", 0, "na",
+                            "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                    setImage((Button) button, blank);
+                }
+            }
+
+
+            submit.setVisible(false);
+            selectedHand.clear(); //clear selected cards
+            dealCards(location, false); //deal new cards to player
+
+            if (gameStatus == Status.P1) {
+                turn(comp);
+            }
+        }
     }
+
 
     public void pickStarter(){
         int random = (int)(Math.random()*2);
@@ -333,6 +331,7 @@ public class GameScreenController {
         }
     }
 
+
     public void turn(Player player){
         if (player.getName().equals("User")) {
             gameStatus = Status.P1;
@@ -341,7 +340,7 @@ public class GameScreenController {
         } else {
             if (comp.getHealthPoints() > 0) {
                 gameStatus = Status.P2;
-                dealCards(bottomRow, true);
+//                dealCards(bottomRow, true);
                 dealCards(topRow, true);
                 System.out.println("comp round"); // for testing
 
@@ -400,9 +399,6 @@ public class GameScreenController {
 
     public void announceWinner(Player player){
         //change endscreen
-        gameStatus = Status.END;
-        System.out.println(player.getName()+ " is the winner!");
+        announceAnimation(player.getName(), rootPane);
     }
-
-
 }

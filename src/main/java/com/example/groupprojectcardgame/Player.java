@@ -1,20 +1,17 @@
 package com.example.groupprojectcardgame;
 
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.text.Text;
 
 public class Player {
     private String name;
     private double health;
 
-
     Player(String name, double health){
         this.name = name;
         this.health = health;
-
     }
 
     public String getName() {return this.name;}
@@ -27,11 +24,13 @@ public class Player {
 
 
 
-    public DoubleProperty healthProperty() {
-        return new SimpleDoubleProperty(health);
+    public Text getPlayerHealthText() {return this.playerHealthText;}
+
+
+
+    public void updateHealthText() {
+        playerHealthText.setText(String.valueOf(health));
     }
-
-
 
     @Override
     public String toString() {

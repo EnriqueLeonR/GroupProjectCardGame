@@ -22,13 +22,13 @@
             </BorderPane.margin></HBox>
         </top>
         <bottom>
-            <HBox fx:id="bottomRow" alignment="CENTER" spacing="10" style="-fx-padding: 20;">
+            <HBox fx:id="bottomRow" alignment="CENTER" maxWidth="500.0" prefHeight="40.0" spacing="10.0" style="-fx-padding: 20;" BorderPane.alignment="BOTTOM_CENTER">
             <BorderPane.margin>
                <Insets bottom="20.0" top="20.0" />
             </BorderPane.margin></HBox>
         </bottom>
         <right>
-            <StackPane fx:id="rightStackPane" prefHeight="419.0" prefWidth="151.0" BorderPane.alignment="CENTER" />
+            <StackPane fx:id="rightStackPane" maxHeight="200.0" maxWidth="200.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
         </right>
         <center>
             <Button fx:id="submit" text="Submit Hand" BorderPane.alignment="CENTER" />

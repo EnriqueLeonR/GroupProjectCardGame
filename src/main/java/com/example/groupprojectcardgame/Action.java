@@ -4,7 +4,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class Action {
+
     public double calculateDamage(ArrayList<Card> cards) {
         Map<Integer, Integer> valueCounts = new HashMap<>();
         Map<String, Integer> suitCounts = new HashMap<>();
@@ -35,9 +37,9 @@ public class Action {
 
         // Check for runs
         damage += getRunDamage(valueCounts, cards);
-
         return damage;
     }
+
 
     private double getPairDamage(int value, ArrayList<Card> cards) {
         double damage = 0;
@@ -66,6 +68,7 @@ public class Action {
         return damage;
     }
 
+
     private double getTrioDamage(int value, ArrayList<Card> cards) {
         double damage = 0;
         int trioCount = 0;
@@ -93,6 +96,7 @@ public class Action {
         return damage;
     }
 
+
     private double getFourOfAKindDamage(int value, ArrayList<Card> cards) {
         double damage = 0;
         int fourOfAKindCount = 0;
@@ -110,45 +114,48 @@ public class Action {
         return damage;
     }
 
+
     private double getRunDamage(Map<Integer, Integer> valueCounts, ArrayList<Card> cards) {
         double damage = 0;
         int runCount = 0;
         int runValue = 0;
-        int previousValue = 0;
+        int previousValue = -1; // Start with an invalid value for comparison
 
-        for (Map.Entry<Integer, Integer> entry : valueCounts.entrySet()) {
-            int value = entry.getKey();
-            int count = entry.getValue();
-
-            if (count >= 1 && value == previousValue + 1) {
+        // Iterate through sorted card values
+        for (int value : valueCounts.keySet().stream().sorted().toList()) {
+            if (valueCounts.get(value) > 0 && value == previousValue + 1) { // Part of the run
                 runCount++;
                 runValue += value;
-            } else {
+            } else { // Run breaks
+                // Calculate damage for the current run
                 if (runCount >= 3) {
-                    if (runCount == 3) {
-                        damage += runValue * 1.5;
-                    } else if (runCount == 4) {
-                        damage += runValue * 1.8;
-                    } else if (runCount == 5) {
-                        damage += runValue * 2.0;
-                    }
+                    damage += calculateRunBonus(runCount, runValue);
                 }
-                runCount = 0;
+                // Reset the run counters
+                runCount = 1; // Current card starts a new potential run
                 runValue = value;
             }
             previousValue = value;
         }
 
+        // Final run calculation if the loop ends on a run
         if (runCount >= 3) {
-            if (runCount == 3) {
-                damage += runValue * 1.5;
-            } else if (runCount == 4) {
-                damage += runValue * 1.8;
-            } else if (runCount == 5) {
-                damage += runValue * 2.0;
-            }
+            damage += calculateRunBonus(runCount, runValue);
         }
 
         return damage;
     }
+
+    // Helper function to calculate damage based on run size and value
+    private double calculateRunBonus(int runCount, int runValue) {
+        if (runCount == 3) {
+            return runValue * 1.5;
+        } else if (runCount == 4) {
+            return runValue * 1.8;
+        } else if (runCount == 5) {
+            return runValue * 2.0;
+        }
+        return 0; // No bonus for other run sizes
+    }
 }
+
