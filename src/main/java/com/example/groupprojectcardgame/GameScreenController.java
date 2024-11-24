@@ -1,8 +1,5 @@
 package com.example.groupprojectcardgame;
 
-import javafx.animation.Interpolator;
-import javafx.animation.PathTransition;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -12,11 +9,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
 import java.util.ArrayList;
+
+import static com.example.groupprojectcardgame.Animation.*;
+import static com.example.groupprojectcardgame.Player.updateHealthBar;
 
 
 public class GameScreenController {
@@ -91,12 +87,20 @@ public class GameScreenController {
         //while(gameStatus != Status.END){
           if(gameStatus == Status.P1){ //run for user turn
               turn(user);
-          } else if(gameStatus == Status.P2){ //run for cpu 1 turn
+          }
+          else if(gameStatus == Status.P2) { //run for cpu 1 turn
               turn(comp);
           }
 
-          if (gameStatus == Status.END) {
-              announceWinner(comp);
+          // Determines winner and displays the appropriate animation
+          if (user.getHealthPoints() == 0 || comp.getHealthPoints() == 0) {
+              gameStatus = Status.END;
+              if (user.getHealthPoints() > comp.getHealthPoints()) {
+                  announceWinner(user);
+              }
+              else {
+                  announceWinner(comp);
+              }
           }
         //}
     }
@@ -180,55 +184,6 @@ public class GameScreenController {
     }
 
 
-    //method to take a Card's src and display on button
-    public void setImage(Button button, Card card){
-        Image img = new Image(card.getSrc());
-        ImageView view = new ImageView(img);
-        view.setFitHeight(button.getPrefHeight());
-        view.setFitWidth(button.getPrefWidth());
-        button.setGraphic(view);
-    }
-
-
-    public void dealAnimation(Card card, StackPane startLocation, Button endLocation, Boolean disable) {
-        Platform.runLater(() -> {
-            Path path = new Path();
-            Button placeholder = new Button();
-
-            // Get start position
-            ObservableList<Node> StackPaneChild = startLocation.getChildren();
-            Node button = StackPaneChild.getFirst();
-            double startX = button.localToScene(0, 0).getX();
-            double startY = button.localToScene(0, 0).getY();
-
-            // Get end position
-            double endX = endLocation.localToScene(0, 0).getX();
-            double endY = endLocation.localToScene(0, 0).getY();
-
-            // Define the animation path
-            path.getElements().add(new MoveTo(startX, startY)); // Starting point
-            path.getElements().add(new LineTo(endX + 49, endY + 65));
-            placeholder.setPrefSize(80, 120);
-            if (disable.equals(true)) {
-                Card blank = new Card("none", 0, "na",
-                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
-                setImage(placeholder, blank);
-            }
-            else {
-                setImage(placeholder, card);
-            }
-            placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
-
-            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
-            borderPane.getChildren().add(placeholder);
-            PathTransition transition = new PathTransition(Duration.seconds(0.9), path, placeholder);
-            transition.setInterpolator(Interpolator.LINEAR);
-            transition.play();
-            transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
-        });
-    }
-
-
     // Method deals cards to each specific hand/row ie- either the top or bottom row
     public void dealCards(HBox location, boolean disable) {
         ObservableList<Node> buttons = location.getChildren();
@@ -246,7 +201,7 @@ public class GameScreenController {
                     button.setDisable(false);
                     setImage((Button) button, card);
                 }
-                dealAnimation(card, rightStackPane, (Button) button, disable);
+                dealAnimation(card, rightStackPane, (Button) button, disable, borderPane);
             }
         }
     }
@@ -307,6 +262,7 @@ public class GameScreenController {
             }
         }
     }
+
 
     public void pickStarter(){
         int random = (int)(Math.random()*2);
@@ -379,55 +335,9 @@ public class GameScreenController {
         }
     }
 
-    public void updateHealthBar(Player player, double damage) {
-        double newHealth = player.getHealthPoints() - damage;
-        player.setHealth(newHealth);
-        player.updateHealthBar();
-    }
-
-
-    public void announceAnimation(String winner) {
-        Platform.runLater(() -> {
-            Path path = new Path();
-            Button placeholder = new Button();
-
-            // Start and end positions
-            double startX = rootPane.getWidth() * -0.2;
-            double startY = rootPane.getHeight() * -0.2;
-            double endX = rootPane.getWidth() * 0.35;
-            double endY = rootPane.getHeight() * 0.8;
-
-            // Define the animation path
-            path.getElements().add(new MoveTo(startX, startY)); // Starting point
-            path.getElements().add(new LineTo(endX, endY));
-            placeholder.setPrefSize(1000, 1500);
-            if (winner.equals("CPU")) {
-                Card blank = new Card("none", 0, "na",
-                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
-                setImage(placeholder, blank);
-            }
-            else {
-                Card card = new Card("none", 0, "na",
-                        "com/example/groupprojectcardgame/images/Card Folder/AceHeartCardDesigns.png");
-                setImage(placeholder, card);
-            }
-            placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
-
-            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
-            rootPane.getChildren().add(placeholder);
-            PathTransition transition = new PathTransition(Duration.seconds(2), path, placeholder);
-            transition.setInterpolator(Interpolator.LINEAR);
-            transition.play();
-            System.out.print(rootPane.getWidth() + ", " + rootPane.getHeight());
-        });
-    }
 
     public void announceWinner(Player player){
         //change endscreen
-        gameStatus = Status.END;
-        System.out.println(player.getName()+ " is the winner!");
-        announceAnimation(player.getName());
+        announceAnimation(player.getName(), rootPane);
     }
-
-
 }
