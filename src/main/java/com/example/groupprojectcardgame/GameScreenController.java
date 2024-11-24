@@ -4,18 +4,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import java.util.ArrayList;
-import java.util.Map;
 
 import static com.example.groupprojectcardgame.Animation.*;
 import static com.example.groupprojectcardgame.Card.setImage;
-import static com.example.groupprojectcardgame.Player.updateHealthBar;
-import static com.example.groupprojectcardgame.Player.updateHealthText;
 
 
 public class GameScreenController {
@@ -240,7 +238,6 @@ public class GameScreenController {
         System.out.println(selectedHand); //for testing
     }
 
-
     //method that test selected cards
     public void testHand(HBox location) {
         Action action = new Action();
@@ -250,45 +247,21 @@ public class GameScreenController {
         }
         System.out.println(dmg);
 
-        //if a hand is valid
-        ObservableList<Node> hand = location.getChildren();
-        ArrayList<Card> cards = new ArrayList<Card>();
-        for(Node button:hand){ //find cards in players hand and remove them
-            Card card = fullDeck.getCard(button.getId());
-            cards.add(card);
-            if(selectedHand.contains(card)){
-                button.setStyle("-fx-border-width: 0;");
-                button.setId("null");
-                button.setDisable(true);
-                Card blank = new Card("none", 0, "na",
-                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
-                setImage((Button) button, blank);
-            }
-        }
-        Hand myhand = new Hand(cards);
-
-
-        Action action = new Action();
-        double dmg = action.calculateDamage(cards);
-
-        comp.setHealth(comp.getHealthPoints() - dmg);
-
-        if (comp.getHealthPoints() <= 0) {
-            announceWinner(user);
-        } else {
-            compProgress.setProgress(comp.getHealthPoints() / 100);
-        }
-
-        submit.setVisible(false);
-        selectedHand.clear(); //clear selected cards
-        dealCards(location, false); //deal new cards to player
-
-        if(gameStatus == Status.P1) {
-            turn(comp);
-        }
         if (dmg > 0) {
-            updateHealthBar(comp, dmg);
-            updateHealthText(comp);
+            double newHealth = comp.getHealthPoints() - dmg;
+            if (newHealth < 0) {
+                comp.setHealth(0);
+            } else {
+                comp.setHealth(newHealth);
+            }
+
+            compProgress.setProgress(comp.getHealthPoints() / 100);
+
+            if (comp.getHealthPoints() == 0) {
+                announceWinner(user);
+            }
+
+            //if a hand is valid
             ObservableList<Node> hand = location.getChildren();
             for (Node button : hand) { //find cards in players hand and remove them
                 Card card = fullDeck.getCard(button.getId());
@@ -302,7 +275,6 @@ public class GameScreenController {
                 }
             }
 
-
             submit.setVisible(false);
             selectedHand.clear(); //clear selected cards
             dealCards(location, false); //deal new cards to player
@@ -312,7 +284,6 @@ public class GameScreenController {
             }
         }
     }
-
 
     public void pickStarter(){
         int random = (int)(Math.random()*2);
