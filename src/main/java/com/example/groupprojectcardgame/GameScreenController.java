@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -20,8 +21,6 @@ import java.util.ArrayList;
 
 import static com.example.groupprojectcardgame.Animation.*;
 import static com.example.groupprojectcardgame.Card.setImage;
-import static com.example.groupprojectcardgame.Player.updateHealthBar;
-import static com.example.groupprojectcardgame.Player.updateHealthText;
 
 
 public class GameScreenController {
@@ -54,6 +53,9 @@ public class GameScreenController {
     //init players
     private Player user = new Player("User", 100);
     private Computer comp = new Computer("CPU", 100);
+    private ProgressBar userProgress = new ProgressBar();
+    private ProgressBar compProgress = new ProgressBar();
+
 
     private enum Status{
         START,
@@ -67,6 +69,10 @@ public class GameScreenController {
 
     @FXML
     public void initialize() {
+
+        userProgress.setProgress(1);
+        compProgress.setProgress(1);
+
         // Resizes the backgroud image to the size of the window ie- allows fullscreen
         imagePane.fitWidthProperty().bind(rootPane.widthProperty());
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
@@ -118,9 +124,12 @@ public class GameScreenController {
         StackPane computerHealthBarContainer = new StackPane();
         StackPane playerHealthBarContainer = new StackPane();
 
+        compProgress.setPrefWidth(400);
+        userProgress.setPrefWidth(400);
+
         // Add health bars to containers
-        computerHealthBarContainer.getChildren().add(comp.getHealthBar());
-        playerHealthBarContainer.getChildren().add(user.getHealthBar());
+        computerHealthBarContainer.getChildren().add(compProgress);
+        playerHealthBarContainer.getChildren().add(userProgress);
 
         // Set mouseTransparent property to true
         computerHealthBarContainer.setMouseTransparent(true);
@@ -238,7 +247,6 @@ public class GameScreenController {
         System.out.println(selectedHand); //for testing
     }
 
-
     //method that test selected cards
     public void testHand(HBox location) {
         Action action = new Action();
@@ -249,8 +257,22 @@ public class GameScreenController {
         System.out.println(dmg);
 
         if (dmg > 0) {
-            updateHealthBar(comp, dmg);
-            updateHealthText(comp);
+            double newHealth = comp.getHealthPoints() - dmg;
+            if (newHealth < 0) {
+                comp.setHealth(0);
+            } else {
+                comp.setHealth(newHealth);
+            }
+            comp.updateHealthText();
+            compProgress.setProgress(comp.getHealthPoints() / 100);
+
+
+
+            if (comp.getHealthPoints() == 0) {
+                announceWinner(user);
+            }
+
+            //if a hand is valid
             ObservableList<Node> hand = location.getChildren();
             for (Node button : hand) { //find cards in players hand and remove them
                 Card card = fullDeck.getCard(button.getId());
@@ -264,7 +286,6 @@ public class GameScreenController {
                 }
             }
 
-
             submit.setVisible(false);
             selectedHand.clear(); //clear selected cards
             dealCards(location, false); //deal new cards to player
@@ -274,7 +295,6 @@ public class GameScreenController {
             }
         }
     }
-
 
     public void pickStarter(){
         int random = (int)(Math.random()*2);
@@ -298,8 +318,8 @@ public class GameScreenController {
         if (player.getName().equals("User")) {
             gameStatus = Status.P1;
             dealCards(bottomRow, false);
-        }
-        else {
+
+        } else {
             if (comp.getHealthPoints() > 0) {
                 gameStatus = Status.P2;
 //                dealCards(bottomRow, true);
@@ -317,11 +337,11 @@ public class GameScreenController {
                 // pass cards and return hand dmg
                 Action action = new Action();
                 double dmg = action.calculateDamage(cards);
-
-                // update health bar for user
-                updateHealthBar(user, dmg);
-                updateHealthText(user);
+                user.setHealth(user.getHealthPoints() - dmg);
                 System.out.println(user.getHealthPoints());
+                userProgress.setProgress(user.getHealthPoints()/100);
+                user.updateHealthText();
+
 
                 // remove cards from comp hand
                 System.out.println(cards);
@@ -348,6 +368,15 @@ public class GameScreenController {
                 announceWinner(user);
             }
         }
+    }
+
+    public void updateComputerHealthBar(double damage) {
+        double newHealth = compProgress.getProgress();
+        compProgress.setProgress(newHealth);
+    }
+    public void updateUserHealthBar(double damage) {
+        double newHealth = userProgress.getProgress() - damage;
+        userProgress.setProgress(newHealth);
     }
 
 
