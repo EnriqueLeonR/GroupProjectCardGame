@@ -37,7 +37,7 @@ public class Card {
 
     @Override
     public String toString() {
-        return String.format("%s%s%n%s%s%n%s%s",
+        return String.format("%s%s%n%s%s%n%s%s%n",
                 "Suit: ", this.suit,
                 "Rank: ", this.rank,
                 "label: ", this.label);
