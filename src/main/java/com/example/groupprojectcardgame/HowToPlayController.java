@@ -21,14 +21,10 @@ public class HowToPlayController {
     private ImageView imagePane;
 
     @FXML
-    private AnchorPane anchorPane;
-
-    @FXML
     public void initialize() {
         imagePane.fitWidthProperty().bind(rootPane.widthProperty());
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
     }
-
 
     @FXML
     private void handleGoBack(ActionEvent event) {

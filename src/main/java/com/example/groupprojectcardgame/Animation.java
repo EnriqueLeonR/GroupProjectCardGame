@@ -4,12 +4,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -17,16 +12,20 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.IOException;
-
 import static com.example.groupprojectcardgame.Card.setImage;
 
 
+/**
+ * Class that holds the animations used on the GameScreen.
+ */
 public class Animation {
 
+    /**
+     * Displays an end game animation.
+     * @param winner the winner of the game
+     * @param location the location for the animation
+     */
     public static void announceAnimation(String winner, StackPane location) {
         Platform.runLater(() -> {
             Path path = new Path();
@@ -78,7 +77,16 @@ public class Animation {
     }
 
 
-    public static void dealAnimation(Card card, StackPane startLocation, Button endLocation, Boolean disable, BorderPane borderPane) {
+    /**
+     * Displays a card dealing animation, cards move from the deck on screen to the players hand.
+     * @param card the card to be displayed
+     * @param startLocation the start location of the animation (deck in this case)
+     * @param endLocation the end location of the animatino (the card slots in the players hand)
+     * @param disable whether or not to show the cards being dealt
+     * @param borderPane the pane the animation will display on
+     */
+    public static void dealAnimation(Card card, StackPane startLocation, Button endLocation, Boolean disable,
+                                     BorderPane borderPane) {
         Platform.runLater(() -> {
             Path path = new Path();
             Button placeholder = new Button();
@@ -97,6 +105,8 @@ public class Animation {
             path.getElements().add(new MoveTo(startX, startY)); // Starting point
             path.getElements().add(new LineTo(endX + 49, endY + 65));
             placeholder.setPrefSize(80, 120);
+
+            // Check if card should be shown or not (usually shows for user)
             if (disable.equals(true)) {
                 Card blank = new Card("none", 0, "na",
                         "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
@@ -112,6 +122,8 @@ public class Animation {
             PathTransition transition = new PathTransition(Duration.seconds(0.9), path, placeholder);
             transition.setInterpolator(Interpolator.LINEAR);
             transition.play();
+
+            // When animation is finished, remove card from screen
             transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
         });
     }
