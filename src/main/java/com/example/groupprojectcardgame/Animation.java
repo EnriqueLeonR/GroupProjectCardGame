@@ -6,8 +6,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
@@ -15,6 +13,9 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import static com.example.groupprojectcardgame.Card.setImage;
+
 
 public class Animation {
 
@@ -67,6 +68,7 @@ public class Animation {
         });
     }
 
+
     public static void dealAnimation(Card card, StackPane startLocation, Button endLocation, Boolean disable, BorderPane borderPane) {
         Platform.runLater(() -> {
             Path path = new Path();
@@ -103,15 +105,5 @@ public class Animation {
             transition.play();
             transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
         });
-    }
-
-
-    //method to take a Card's src and display on button
-    public static void setImage(Button button, Card card){
-        Image img = new Image(card.getSrc());
-        ImageView view = new ImageView(img);
-        view.setFitHeight(button.getPrefHeight());
-        view.setFitWidth(button.getPrefWidth());
-        button.setGraphic(view);
     }
 }

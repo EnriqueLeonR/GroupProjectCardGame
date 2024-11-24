@@ -1,5 +1,9 @@
 package com.example.groupprojectcardgame;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -8,11 +12,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+
 import java.util.ArrayList;
 
 import static com.example.groupprojectcardgame.Animation.*;
+import static com.example.groupprojectcardgame.Card.setImage;
 import static com.example.groupprojectcardgame.Player.updateHealthBar;
+import static com.example.groupprojectcardgame.Player.updateHealthText;
 
 
 public class GameScreenController {
@@ -67,7 +76,6 @@ public class GameScreenController {
         Button[] bottomButtons = addButtons(bottomRow);
         addDeck(rightStackPane);
 
-
         //dealCards(top); //uncomment when deck is complete
 
         createHealthBars();
@@ -119,9 +127,14 @@ public class GameScreenController {
         computerHealthBarContainer.setMouseTransparent(true);
         playerHealthBarContainer.setMouseTransparent(true);
 
+        // Set health bar text
+        computerHealthBarContainer.getChildren().add(comp.getPlayerHealthText());
+        playerHealthBarContainer.getChildren().add(user.getPlayerHealthText());
+
         // Add containers to game screen
         rootPane.getChildren().add(computerHealthBarContainer);
         rootPane.getChildren().add(playerHealthBarContainer);
+
 
         // Position health bar containers
         computerHealthBarContainer.setTranslateX(10);
@@ -213,7 +226,7 @@ public class GameScreenController {
         //System.out.println(card.getSrc());
         if(selectedHand.contains(card)){
             selectedHand.remove(card);
-            button.setStyle("-fx-border-width: 0;");
+            button.setStyle("-fx-background-color: transparent;");
         } else{
             selectedHand.add(card);
             button.setStyle("-fx-border-color: #c2f0ee; -fx-border-width: 5px;");
@@ -239,6 +252,7 @@ public class GameScreenController {
 
         if (dmg > 0) {
             updateHealthBar(comp, dmg);
+            updateHealthText(comp);
             ObservableList<Node> hand = location.getChildren();
             for (Node button : hand) { //find cards in players hand and remove them
                 Card card = fullDeck.getCard(button.getId());
@@ -306,6 +320,7 @@ public class GameScreenController {
 
                 // update health bar for user
                 updateHealthBar(user, dmg);
+                updateHealthText(user);
                 System.out.println(user.getHealthPoints());
 
                 // remove cards from comp hand
