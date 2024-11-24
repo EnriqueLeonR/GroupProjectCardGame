@@ -274,29 +274,37 @@ public class GameScreenController {
 
 
     //method that test selected cards
-    public void testHand(HBox location){
-        //use cards in selected hand to do actions here
-
-        //if a hand is valid
-        ObservableList<Node> hand = location.getChildren();
-        for(Node button:hand){ //find cards in players hand and remove them
-            Card card = fullDeck.getCard(button.getId());
-            if(selectedHand.contains(card)){
-                button.setStyle("-fx-border-width: 0;");
-                button.setId("null");
-                button.setDisable(true);
-                Card blank = new Card("none", 0, "na",
-                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
-                setImage((Button) button, blank);
-            }
+    public void testHand(HBox location) {
+        Action action = new Action();
+        double dmg = action.calculateDamage(selectedHand);
+        if (selectedHand.size() == 1) {
+            dmg = selectedHand.getFirst().getRank();
         }
+        System.out.println(dmg);
 
-        submit.setVisible(false);
-        selectedHand.clear(); //clear selected cards
-        dealCards(location, false); //deal new cards to player
+        if (dmg > 0) {
+            updateHealthBar(comp, dmg);
+            ObservableList<Node> hand = location.getChildren();
+            for (Node button : hand) { //find cards in players hand and remove them
+                Card card = fullDeck.getCard(button.getId());
+                if (selectedHand.contains(card)) {
+                    button.setStyle("-fx-border-width: 0;");
+                    button.setId("null");
+                    button.setDisable(true);
+                    Card blank = new Card("none", 0, "na",
+                            "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                    setImage((Button) button, blank);
+                }
+            }
 
-        if(gameStatus == Status.P1) {
-            turn(comp);
+
+            submit.setVisible(false);
+            selectedHand.clear(); //clear selected cards
+            dealCards(location, false); //deal new cards to player
+
+            if (gameStatus == Status.P1) {
+                turn(comp);
+            }
         }
     }
 
@@ -339,11 +347,10 @@ public class GameScreenController {
                 // pass cards and return hand dmg
                 Action action = new Action();
                 double dmg = action.calculateDamage(cards);
-                user.setHealth(user.getHealthPoints() - dmg);
-                System.out.println(user.getHealthPoints());
 
                 // update health bar for user
                 updateHealthBar(user, dmg);
+                System.out.println(user.getHealthPoints());
 
                 // remove cards from comp hand
                 System.out.println(cards);
