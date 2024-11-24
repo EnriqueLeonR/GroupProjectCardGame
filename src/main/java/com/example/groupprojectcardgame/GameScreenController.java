@@ -12,11 +12,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
-
+import javafx.scene.control.ProgressBar;
 import java.util.ArrayList;
 
 public class GameScreenController {
@@ -70,6 +72,11 @@ public class GameScreenController {
         Button[] bottomButtons = addButtons(bottomRow);
         addDeck(rightStackPane);
 
+
+        //dealCards(top); //uncomment when deck is complete
+
+        createHealthBars();
+
         //setup submit hand button
         submit.setVisible(false);
         submit.setOnAction(actionEvent -> {
@@ -91,6 +98,29 @@ public class GameScreenController {
         //}
     }
 
+    private void createHealthBars() {
+        // Create separate containers for health bars
+        StackPane computerHealthBarContainer = new StackPane();
+        StackPane playerHealthBarContainer = new StackPane();
+
+        // Add health bars to containers
+        computerHealthBarContainer.getChildren().add(comp.getHealthBar());
+        playerHealthBarContainer.getChildren().add(user.getHealthBar());
+
+        // Set mouseTransparent property to true
+        computerHealthBarContainer.setMouseTransparent(true);
+        playerHealthBarContainer.setMouseTransparent(true);
+
+        // Add containers to game screen
+        rootPane.getChildren().add(computerHealthBarContainer);
+        rootPane.getChildren().add(playerHealthBarContainer);
+
+        // Position health bar containers
+        computerHealthBarContainer.setTranslateX(10);
+        computerHealthBarContainer.setTranslateY(topRow.getBoundsInParent().getMinY() - 120); // Move up by 80 pixels
+        playerHealthBarContainer.setTranslateX(10);
+        playerHealthBarContainer.setTranslateY(bottomRow.getBoundsInParent().getMaxY() + 120); // Move down by 80 pixels
+    }
 
     public void addDeck(StackPane location) {
         deck.shuffle();
@@ -281,35 +311,39 @@ public class GameScreenController {
     }
 
     public void turn(Player player){
-        if(player.getName().equals("User")){
+        if (player.getName().equals("User")) {
             gameStatus = Status.P1;
             dealCards(bottomRow, false);
-        }else{
-            if(comp.getHealthPoints()>0) {
+        } else {
+            if (comp.getHealthPoints() > 0) {
                 gameStatus = Status.P2;
                 dealCards(bottomRow, true);
                 dealCards(topRow, true);
-                System.out.println("comp round"); //for testing
+                System.out.println("comp round"); // for testing
 
-                //convert comp buttons to cards
+                // convert comp buttons to cards
                 ObservableList<Node> hand = topRow.getChildren();
                 ArrayList<Card> cards = new ArrayList<>();
-                for(int index = 0; index<5; index++){
-                    cards.add(fullDeck.getCard(hand.get(index).getId())); //<<
+                for (int index = 0; index < 5; index++) {
+                    cards.add(fullDeck.getCard(hand.get(index).getId())); // <<
                 }
-                System.out.println(cards); //returns comp cards for testing
+                System.out.println(cards); // returns comp cards for testing
 
-                //pass cards and return hand dmg
-                int dmg = comp.pickRandom(cards);
-                user.setHealth(user.getHealthPoints()-dmg);
+                // pass cards and return hand dmg
+                Action action = new Action();
+                double dmg = action.calculateDamage(cards);
+                user.setHealth(user.getHealthPoints() - dmg);
                 System.out.println(user.getHealthPoints());
 
-                //remove cards from comp hand
+                // update health bar for user
+                updateHealthBar(user, dmg);
+
+                // remove cards from comp hand
                 System.out.println(cards);
                 ObservableList<Node> top = topRow.getChildren();
-                for(Node button:top){ //find cards in players hand and remove them
+                for (Node button : top) { // find cards in players hand and remove them
                     Card card = fullDeck.getCard(button.getId());
-                    if(cards.contains(card)){
+                    if (cards.contains(card)) {
                         button.setId("null");
                         button.setDisable(true);
                         Card blank = new Card("none", 0, "na",
@@ -317,18 +351,24 @@ public class GameScreenController {
                         setImage((Button) button, blank);
                     }
                 }
-                dealCards(topRow, true); //for testing
+                dealCards(topRow, true); // for testing
 
                 if (user.getHealthPoints() > 0) {
-                   turn(user);
+                    turn(user);
 
                 } else {
                     announceWinner(comp);
                 }
-            } else{
+            } else {
                 announceWinner(user);
             }
         }
+    }
+
+    public void updateHealthBar(Player player, double damage) {
+        double newHealth = player.getHealthPoints() - damage;
+        player.setHealth(newHealth);
+        player.updateHealthBar();
     }
 
     public void announceWinner(Player player){
@@ -336,4 +376,6 @@ public class GameScreenController {
         gameStatus = Status.END;
         System.out.println(player.getName()+ " is the winner!");
     }
+
+
 }
