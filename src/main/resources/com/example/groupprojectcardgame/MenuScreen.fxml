@@ -10,13 +10,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="440.0" prefWidth="775.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.groupprojectcardgame.MenuScreenController">
-    <ImageView fitHeight="497.0" fitWidth="775.0" preserveRatio="true">
+<StackPane fx:id="rootPane" prefHeight="440.0" prefWidth="775.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.groupprojectcardgame.MenuScreenController">
+    <ImageView fx:id="imagePane" fitHeight="497.0" fitWidth="775.0">
         <image>
             <Image url="@images/Background%20Folder/logorender1.jpg" />
         </image>
     </ImageView>
-    <BorderPane prefHeight="689.0" prefWidth="685.0" style="-fx-border-color: black; -fx-border-width: 4;">
+    <BorderPane fx:id="border" prefHeight="689.0" prefWidth="685.0" style="-fx-border-color: black; -fx-border-width: 4;">
         <top>
             <Text fontSmoothingType="LCD" text="WELCOME TO" textAlignment="CENTER" wrappingWidth="613.0" BorderPane.alignment="CENTER">
                 <font>
@@ -26,14 +26,16 @@
         </top>
         <center>
             <Pane prefHeight="284.0" prefWidth="677.0">
-                <Button layoutX="456.0" layoutY="189.0" onAction="#handleHowToPlay" prefHeight="52.0" prefWidth="147.0" text="How To Play">
+                <Button fx:id="howToButton" layoutX="456.0" layoutY="189.0" onAction="#handleHowToPlay" prefHeight="52.0" prefWidth="147.0" text="How To Play">
                <font>
                   <Font size="21.0" />
-               </font></Button>
-                <Button layoutX="102.0" layoutY="188.0" onAction="#handleStartGame" prefHeight="54.0" prefWidth="149.0" text="Play Game">
+               </font>
+            </Button>
+                <Button fx:id="playGameButton" layoutX="113.0" layoutY="188.0" onAction="#handleStartGame" prefHeight="54.0" prefWidth="149.0" text="Play Game">
                <font>
                   <Font size="21.0" />
-               </font></Button>
+               </font>
+            </Button>
             </Pane>
         </center>
         <padding>

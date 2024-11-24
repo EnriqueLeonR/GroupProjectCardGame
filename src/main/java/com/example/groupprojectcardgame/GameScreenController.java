@@ -184,35 +184,41 @@ public class GameScreenController {
     }
 
 
-    public void dealAnimation(Card card, StackPane startLocation, Button endLocation) {
+    public void dealAnimation(Card card, StackPane startLocation, Button endLocation, Boolean disable) {
         Platform.runLater(() -> {
-            System.out.println("StackPane Size: " + rootPane.getWidth() + " x " + rootPane.getHeight());
             Path path = new Path();
             Button placeholder = new Button();
 
+            // Get start position
             ObservableList<Node> StackPaneChild = startLocation.getChildren();
             Node button = StackPaneChild.getFirst();
             double startX = button.localToScene(0, 0).getX();
             double startY = button.localToScene(0, 0).getY();
 
-            // Get the end position in scene coordinates
+            // Get end position
             double endX = endLocation.localToScene(0, 0).getX();
             double endY = endLocation.localToScene(0, 0).getY();
 
             // Define the animation path
             path.getElements().add(new MoveTo(startX, startY)); // Starting point
-            path.getElements().add(new LineTo(endX, endY));
+            path.getElements().add(new LineTo(endX + 49, endY + 65));
             placeholder.setPrefSize(80, 120);
-            setImage(placeholder, card);
+            if (disable.equals(true)) {
+                Card blank = new Card("none", 0, "na",
+                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                setImage(placeholder, blank);
+            }
+            else {
+                setImage(placeholder, card);
+            }
             placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
 
-            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, ROOTPANE WAS MY WHOLE ISSUE
+            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
             borderPane.getChildren().add(placeholder);
-            PathTransition transition = new PathTransition(Duration.seconds(2), path, placeholder);
+            PathTransition transition = new PathTransition(Duration.seconds(0.9), path, placeholder);
             transition.setInterpolator(Interpolator.LINEAR);
-            System.out.println("Animation Start: " + startX + ", " + startY);
-            System.out.println("Animation End: " + endX + ", " + endY);
             transition.play();
+            transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
         });
     }
 
@@ -222,6 +228,10 @@ public class GameScreenController {
         ObservableList<Node> buttons = location.getChildren();
         for (Node button : buttons) {
             if(button.getId().equals("null")) { //for every empty button, add Card vars to button
+                if(deck.size() <= 0){
+                    deck = new Deck(); //this will refill the deck, rarely causes issues
+                    deck.shuffle();
+                }
                 Card card = deck.draw();
                 System.out.print(deck.size()); //testing
                 button.setId(card.getLabel());
@@ -229,7 +239,7 @@ public class GameScreenController {
                     button.setDisable(false);
                     setImage((Button) button, card);
                 }
-                dealAnimation(card, rightStackPane, (Button) button);
+                dealAnimation(card, rightStackPane, (Button) button, disable);
             }
         }
     }
@@ -241,8 +251,10 @@ public class GameScreenController {
         //System.out.println(card.getSrc());
         if(selectedHand.contains(card)){
             selectedHand.remove(card);
+            button.setStyle("-fx-border-width: 0;");
         } else{
             selectedHand.add(card);
+            button.setStyle("-fx-border-color: #c2f0ee; -fx-border-width: 5px;");
         }
 
         if(!selectedHand.isEmpty()){
@@ -263,6 +275,7 @@ public class GameScreenController {
         for(Node button:hand){ //find cards in players hand and remove them
             Card card = fullDeck.getCard(button.getId());
             if(selectedHand.contains(card)){
+                button.setStyle("-fx-border-width: 0;");
                 button.setId("null");
                 button.setDisable(true);
                 Card blank = new Card("none", 0, "na",
