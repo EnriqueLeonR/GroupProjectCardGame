@@ -9,21 +9,92 @@
 <?import javafx.scene.text.Text?>
 
 <StackPane prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.groupprojectcardgame.HowToPlayController">
+    <!-- Background Image -->
     <ImageView fitHeight="600" fitWidth="800" preserveRatio="false">
         <image>
             <Image url="@images/Background%20Folder/HelpScreenBackgrounds.png" />
         </image>
     </ImageView>
     <AnchorPane>
-        <Text layoutX="250.0" layoutY="77.0" text="How to Play Rumik">
+        <!-- Title -->
+        <Text layoutX="250.0" layoutY="50.0" text="How to Play Rumik" wrappingWidth="500">
             <font>
                 <Font size="36" />
             </font>
         </Text>
-        <Text layoutX="50.0" layoutY="117.0" text="This is where you explain the rules of the game. Add your instructions here." wrappingWidth="700.0">
-         <font>
-            <Font size="23.0" />
-         </font></Text>
-        <Button layoutX="350.0" layoutY="516.0" onAction="#handleGoBack" prefHeight="40.0" prefWidth="100.0" text="Back To Menu" />
+
+        <!-- Rules Section -->
+        <Text layoutX="50.0" layoutY="120.0" text="Rules of the Game:" wrappingWidth="700.0">
+            <font>
+                <Font size="28" />
+            </font>
+        </Text>
+
+        <!-- Game Rules -->
+        <Text layoutX="50.0" layoutY="170.0" text="1. Player vs Computer." wrappingWidth="700.0">
+            <font>
+                <Font size="20" />
+            </font>
+        </Text>
+        <Text layoutX="50.0" layoutY="200.0" text="2. Each player starts with 5 random cards." wrappingWidth="700.0">
+            <font>
+                <Font size="20" />
+            </font>
+        </Text>
+        <Text layoutX="50.0" layoutY="230.0" text="3. The game uses 2 decks of 52 cards." wrappingWidth="700.0">
+            <font>
+                <Font size="20" />
+            </font>
+        </Text>
+        <Text layoutX="50.0" layoutY="260.0" text="4. Card damage rules:" wrappingWidth="700.0">
+            <font>
+                <Font size="20" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="290.0" text="- Playing a single card deals its value as damage." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="320.0" text="- Pair of same number: Damage = (Sum of values) x 1.5." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="350.0" text="- Pair of same number and suit: Damage = (Sum of values) x 1.8." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="380.0" text="- Trio of same number: Damage = (Sum of values) x 1.8." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="410.0" text="- Trio of same number and suit: Damage = (Sum of values) x 2.0." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="440.0" text="- Four of a kind: Damage = (Sum of values) x 2.5." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+        <Text layoutX="70.0" layoutY="470.0" text="- Runs (cards in sequence): 3 cards x 1.5, 4 cards x 1.8, 5 cards x 2.0." wrappingWidth="650.0">
+            <font>
+                <Font size="18" />
+            </font>
+        </Text>
+
+        <!-- Additional Features -->
+        <Text layoutX="50.0" layoutY="500.0" text="5. Health bars show remaining life. Pop-ups show scores at game start and end." wrappingWidth="700.0">
+            <font>
+                <Font size="20" />
+            </font>
+        </Text>
+
+        <!-- Back Button -->
+        <Button layoutX="350.0" layoutY="540.0" onAction="#handleGoBack" prefHeight="40.0" prefWidth="100.0" text="Back To Menu" />
     </AnchorPane>
 </StackPane>
