@@ -4,7 +4,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class Action {
+
     public double calculateDamage(ArrayList<Card> cards) {
         Map<Integer, Integer> valueCounts = new HashMap<>();
         Map<String, Integer> suitCounts = new HashMap<>();
@@ -35,9 +37,9 @@ public class Action {
 
         // Check for runs
         damage += getRunDamage(valueCounts, cards);
-
         return damage;
     }
+
 
     private double getPairDamage(int value, ArrayList<Card> cards) {
         double damage = 0;
@@ -66,6 +68,7 @@ public class Action {
         return damage;
     }
 
+
     private double getTrioDamage(int value, ArrayList<Card> cards) {
         double damage = 0;
         int trioCount = 0;
@@ -93,6 +96,7 @@ public class Action {
         return damage;
     }
 
+
     private double getFourOfAKindDamage(int value, ArrayList<Card> cards) {
         double damage = 0;
         int fourOfAKindCount = 0;
@@ -109,6 +113,7 @@ public class Action {
 
         return damage;
     }
+
 
     private double getRunDamage(Map<Integer, Integer> valueCounts, ArrayList<Card> cards) {
         double damage = 0;

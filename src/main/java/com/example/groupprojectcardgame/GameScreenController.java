@@ -12,14 +12,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
-import javafx.scene.control.ProgressBar;
 import java.util.ArrayList;
+
 
 public class GameScreenController {
 
@@ -61,6 +59,7 @@ public class GameScreenController {
 
     private Status gameStatus = Status.START;
 
+
     @FXML
     public void initialize() {
         // Resizes the backgroud image to the size of the window ie- allows fullscreen
@@ -95,8 +94,13 @@ public class GameScreenController {
           } else if(gameStatus == Status.P2){ //run for cpu 1 turn
               turn(comp);
           }
+
+          if (gameStatus == Status.END) {
+              announceWinner(comp);
+          }
         //}
     }
+
 
     private void createHealthBars() {
         // Create separate containers for health bars
@@ -122,6 +126,7 @@ public class GameScreenController {
         playerHealthBarContainer.setTranslateY(bottomRow.getBoundsInParent().getMaxY() + 120); // Move down by 80 pixels
     }
 
+
     public void addDeck(StackPane location) {
         deck.shuffle();
         for (int i = 0; i <= deck.size(); i++) {
@@ -137,6 +142,7 @@ public class GameScreenController {
             view.setFitHeight(cardButton.getPrefHeight());
             view.setFitWidth(cardButton.getPrefWidth());
             cardButton.setGraphic(view);
+            cardButton.setStyle("-fx-background-color: transparent;");
 
             location.getChildren().add(cardButton);
         }
@@ -235,6 +241,7 @@ public class GameScreenController {
                 Card card = deck.draw();
                 System.out.print(deck.size()); //testing
                 button.setId(card.getLabel());
+                button.setStyle("-fx-background-color: transparent;");
                 if(!disable){
                     button.setDisable(false);
                     setImage((Button) button, card);
@@ -371,10 +378,48 @@ public class GameScreenController {
         player.updateHealthBar();
     }
 
+
+    public void announceAnimation(String winner) {
+        Platform.runLater(() -> {
+            Path path = new Path();
+            Button placeholder = new Button();
+
+            // Start and end positions
+            double startX = rootPane.getWidth() * -0.2;
+            double startY = rootPane.getHeight() * -0.2;
+            double endX = rootPane.getWidth() * 0.35;
+            double endY = rootPane.getHeight() * 0.8;
+
+            // Define the animation path
+            path.getElements().add(new MoveTo(startX, startY)); // Starting point
+            path.getElements().add(new LineTo(endX, endY));
+            placeholder.setPrefSize(1000, 1500);
+            if (winner.equals("CPU")) {
+                Card blank = new Card("none", 0, "na",
+                        "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                setImage(placeholder, blank);
+            }
+            else {
+                Card card = new Card("none", 0, "na",
+                        "com/example/groupprojectcardgame/images/Card Folder/AceHeartCardDesigns.png");
+                setImage(placeholder, card);
+            }
+            placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
+
+            // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
+            rootPane.getChildren().add(placeholder);
+            PathTransition transition = new PathTransition(Duration.seconds(2), path, placeholder);
+            transition.setInterpolator(Interpolator.LINEAR);
+            transition.play();
+            System.out.print(rootPane.getWidth() + ", " + rootPane.getHeight());
+        });
+    }
+
     public void announceWinner(Player player){
         //change endscreen
         gameStatus = Status.END;
         System.out.println(player.getName()+ " is the winner!");
+        announceAnimation(player.getName());
     }
 
 
