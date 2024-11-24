@@ -10,6 +10,8 @@ public class Player {
     Player(String name, double health){
         this.name = name;
         this.health = health;
+        this.playerHealthText = new Text();
+        this.playerHealthText.setText(String.valueOf(health));
     }
 
     public String getName() {return this.name;}
@@ -20,6 +22,10 @@ public class Player {
 
     public void updateHealthText() {
         playerHealthText.setText(String.valueOf(health));
+    }
+
+    public static void updateHealthText(Player player) {
+        player.updateHealthText();
     }
 
     public Text getPlayerHealthText() {return this.playerHealthText;}
