@@ -111,20 +111,22 @@ public class Animation {
                 Card blank = new Card("none", 0, "na",
                         "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
                 setImage(placeholder, blank);
-            }
-            else {
+            } else {
                 setImage(placeholder, card);
             }
             placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
 
             // THIS NEEDS TO BE BORDERPANE AND NOTHING ELSE, USING ROOTPANE WAS MY WHOLE ISSUE
             borderPane.getChildren().add(placeholder);
-            PathTransition transition = new PathTransition(Duration.seconds(0.9), path, placeholder);
+            PathTransition transition = new PathTransition(Duration.seconds(0.7), path, placeholder);
             transition.setInterpolator(Interpolator.LINEAR);
             transition.play();
 
             // When animation is finished, remove card from screen
-            transition.setOnFinished(e -> borderPane.getChildren().remove(placeholder));
+            transition.setOnFinished(e -> {
+                setImage(endLocation, card);
+                borderPane.getChildren().remove(placeholder);
+            });
         });
     }
 }

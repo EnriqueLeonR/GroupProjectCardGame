@@ -219,7 +219,7 @@ public class GameScreenController {
                 button.setStyle("-fx-background-color: transparent;");
                 if(!disable){
                     button.setDisable(false);
-                    setImage((Button) button, card);
+//                    setImage((Button) button, card);
                 }
                 dealAnimation(card, rightStackPane, (Button) button, disable, borderPane);
             }
