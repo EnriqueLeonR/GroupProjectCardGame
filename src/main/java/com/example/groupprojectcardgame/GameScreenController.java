@@ -1,9 +1,5 @@
 package com.example.groupprojectcardgame;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -12,10 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-
 import java.util.ArrayList;
 
 import static com.example.groupprojectcardgame.Animation.*;
@@ -134,7 +127,6 @@ public class GameScreenController {
         // Add containers to game screen
         rootPane.getChildren().add(computerHealthBarContainer);
         rootPane.getChildren().add(playerHealthBarContainer);
-
 
         // Position health bar containers
         computerHealthBarContainer.setTranslateX(10);
@@ -295,14 +287,16 @@ public class GameScreenController {
         }
     }
 
+
     public void turn(Player player){
         if (player.getName().equals("User")) {
             gameStatus = Status.P1;
             dealCards(bottomRow, false);
-        } else {
+        }
+        else {
             if (comp.getHealthPoints() > 0) {
                 gameStatus = Status.P2;
-                dealCards(bottomRow, true);
+//                dealCards(bottomRow, true);
                 dealCards(topRow, true);
                 System.out.println("comp round"); // for testing
 

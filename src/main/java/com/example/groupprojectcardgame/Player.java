@@ -17,6 +17,7 @@ public class Player {
         this.healthBar = new ProgressBar();
         this.healthBar.setProgress(1.0);// Initialize progress to 1.0 (full health)
         this.healthBar.setPrefWidth(400);// Set the preferred width to 200
+//        this.healthBar.setStyle("-fx-accent: red;"); can change this to whatever color if wanted
         this.playerHealthText = new Text();
         this.playerHealthText.setText(String.valueOf(health));
     }

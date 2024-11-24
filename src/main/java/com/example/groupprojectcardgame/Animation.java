@@ -23,6 +23,7 @@ public class Animation {
         Platform.runLater(() -> {
             Path path = new Path();
             Button placeholder = new Button();
+            Text text = new Text();
 
             // Start and end positions
             double startX = location.getWidth() * -0.2;
@@ -42,12 +43,14 @@ public class Animation {
                         "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
                 setImage(placeholder, blank);
                 winOrLose = "lose";
+                text.setStyle("-fx-font-weight: bold; -fx-font-size: 60px; -fx-fill: black;");
             }
             else {
                 Card card = new Card("none", 0, "na",
                         "com/example/groupprojectcardgame/images/Card Folder/AceHeartCardDesigns.png");
                 setImage(placeholder, card);
                 winOrLose = "win";
+                text.setStyle("-fx-font-weight: bold; -fx-font-size: 40px; -fx-fill: white;");
             }
             placeholder.setStyle("-fx-background-color: transparent;"); // Match the look
 
@@ -59,8 +62,6 @@ public class Animation {
             transition.play();
 
             // Displays you win or you lose on screen
-            Text text = new Text();
-            text.setStyle("-fx-font-size: 40px; -fx-fill: white;");
             text.setText("You " + winOrLose + "!");
             text.setX(location.getWidth() * 0.35);
             text.setY(location.getWidth() * 0.8);
