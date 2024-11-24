@@ -20,6 +20,7 @@ import javafx.scene.shape.Path;
 import javafx.util.Duration;
 import javafx.scene.control.ProgressBar;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class GameScreenController {
 
@@ -51,6 +52,9 @@ public class GameScreenController {
     //init players
     private Player user = new Player("User", 100);
     private Computer comp = new Computer("CPU", 100);
+    private ProgressBar userProgress = new ProgressBar();
+    private ProgressBar compProgress = new ProgressBar();
+
 
     private enum Status{
         START,
@@ -63,6 +67,10 @@ public class GameScreenController {
 
     @FXML
     public void initialize() {
+
+        userProgress.setProgress(1);
+        compProgress.setProgress(1);
+
         // Resizes the backgroud image to the size of the window ie- allows fullscreen
         imagePane.fitWidthProperty().bind(rootPane.widthProperty());
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
@@ -104,8 +112,8 @@ public class GameScreenController {
         StackPane playerHealthBarContainer = new StackPane();
 
         // Add health bars to containers
-        computerHealthBarContainer.getChildren().add(comp.getHealthBar());
-        playerHealthBarContainer.getChildren().add(user.getHealthBar());
+        computerHealthBarContainer.getChildren().add(compProgress);
+        playerHealthBarContainer.getChildren().add(userProgress);
 
         // Set mouseTransparent property to true
         computerHealthBarContainer.setMouseTransparent(true);
@@ -272,8 +280,10 @@ public class GameScreenController {
 
         //if a hand is valid
         ObservableList<Node> hand = location.getChildren();
+        ArrayList<Card> cards = new ArrayList<Card>();
         for(Node button:hand){ //find cards in players hand and remove them
             Card card = fullDeck.getCard(button.getId());
+            cards.add(card);
             if(selectedHand.contains(card)){
                 button.setStyle("-fx-border-width: 0;");
                 button.setId("null");
@@ -282,6 +292,19 @@ public class GameScreenController {
                         "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
                 setImage((Button) button, blank);
             }
+        }
+        Hand myhand = new Hand(cards);
+
+
+        Action action = new Action();
+        double dmg = action.calculateDamage(cards);
+
+        comp.setHealth(comp.getHealthPoints() - dmg);
+
+        if (comp.getHealthPoints() <= 0) {
+            announceWinner(user);
+        } else {
+            compProgress.setProgress(comp.getHealthPoints() / 100);
         }
 
         submit.setVisible(false);
@@ -314,6 +337,7 @@ public class GameScreenController {
         if (player.getName().equals("User")) {
             gameStatus = Status.P1;
             dealCards(bottomRow, false);
+
         } else {
             if (comp.getHealthPoints() > 0) {
                 gameStatus = Status.P2;
@@ -334,9 +358,8 @@ public class GameScreenController {
                 double dmg = action.calculateDamage(cards);
                 user.setHealth(user.getHealthPoints() - dmg);
                 System.out.println(user.getHealthPoints());
+                userProgress.setProgress(user.getHealthPoints()/100);
 
-                // update health bar for user
-                updateHealthBar(user, dmg);
 
                 // remove cards from comp hand
                 System.out.println(cards);
@@ -365,11 +388,15 @@ public class GameScreenController {
         }
     }
 
-    public void updateHealthBar(Player player, double damage) {
-        double newHealth = player.getHealthPoints() - damage;
-        player.setHealth(newHealth);
-        player.updateHealthBar();
+    public void updateComputerHealthBar(double damage) {
+        double newHealth = compProgress.getProgress();
+        compProgress.setProgress(newHealth);
     }
+    public void updateUserHealthBar(double damage) {
+        double newHealth = userProgress.getProgress() - damage;
+        userProgress.setProgress(newHealth);
+    }
+
 
     public void announceWinner(Player player){
         //change endscreen
