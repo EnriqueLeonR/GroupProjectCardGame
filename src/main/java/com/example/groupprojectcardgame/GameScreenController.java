@@ -2,13 +2,20 @@ package com.example.groupprojectcardgame;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.example.groupprojectcardgame.Animation.*;
@@ -92,7 +99,6 @@ public class GameScreenController {
           else if(gameStatus == Status.P2) { //run for cpu 1 turn
               turn(comp);
           }
-
           // Determines winner and displays the appropriate animation
           if (user.getHealthPoints() == 0 || comp.getHealthPoints() == 0) {
               gameStatus = Status.END;
@@ -348,5 +354,35 @@ public class GameScreenController {
     public void announceWinner(Player player){
         //change endscreen
         announceAnimation(player.getName(), rootPane);
+        restartGame();
+    }
+
+
+    private void restartGame() {
+        Button restartButton = new Button();
+        restartButton.setText("Restart game?");
+        restartButton.setPrefWidth(200); // Set the width
+        restartButton.setPrefHeight(100);
+        rootPane.getChildren().add(restartButton);
+        rootPane.setAlignment(restartButton, Pos.TOP_LEFT);
+        restartButton.setOnAction(actionEvent -> {
+            // Load the Game Screen FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/groupprojectcardgame/GameScreen.fxml"));
+            Parent gameScreenRoot = null;
+            try {
+                gameScreenRoot = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Get the current stage from the button event
+            Stage stage = (Stage) ((javafx.scene.Node) actionEvent.getSource()).getScene().getWindow();
+
+            // Set the new scene to the Game Screen
+            stage.setScene(new Scene(gameScreenRoot));
+            stage.setTitle("Game Screen");
+            stage.setFullScreen(true);
+            stage.show();
+        });
     }
 }

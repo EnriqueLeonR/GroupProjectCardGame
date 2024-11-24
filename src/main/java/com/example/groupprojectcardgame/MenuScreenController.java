@@ -57,6 +57,7 @@ public class MenuScreenController {
         }
     }
 
+
     @FXML
     private void handleHowToPlay(ActionEvent event) {
         try {
