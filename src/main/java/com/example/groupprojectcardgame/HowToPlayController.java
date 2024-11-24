@@ -5,11 +5,30 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
+
 public class HowToPlayController {
+    @FXML
+    private StackPane rootPane;
+
+    @FXML
+    private ImageView imagePane;
+
+    @FXML
+    private AnchorPane anchorPane;
+
+    @FXML
+    public void initialize() {
+        imagePane.fitWidthProperty().bind(rootPane.widthProperty());
+        imagePane.fitHeightProperty().bind(rootPane.heightProperty());
+    }
+
 
     @FXML
     private void handleGoBack(ActionEvent event) {
