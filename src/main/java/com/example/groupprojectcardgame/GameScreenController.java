@@ -118,6 +118,9 @@ public class GameScreenController {
         StackPane computerHealthBarContainer = new StackPane();
         StackPane playerHealthBarContainer = new StackPane();
 
+        compProgress.setPrefWidth(400);
+        userProgress.setPrefWidth(400);
+
         // Add health bars to containers
         computerHealthBarContainer.getChildren().add(compProgress);
         playerHealthBarContainer.getChildren().add(userProgress);
@@ -254,8 +257,10 @@ public class GameScreenController {
             } else {
                 comp.setHealth(newHealth);
             }
-
+            comp.updateHealthText();
             compProgress.setProgress(comp.getHealthPoints() / 100);
+
+
 
             if (comp.getHealthPoints() == 0) {
                 announceWinner(user);
@@ -329,6 +334,7 @@ public class GameScreenController {
                 user.setHealth(user.getHealthPoints() - dmg);
                 System.out.println(user.getHealthPoints());
                 userProgress.setProgress(user.getHealthPoints()/100);
+                user.updateHealthText();
 
 
                 // remove cards from comp hand
