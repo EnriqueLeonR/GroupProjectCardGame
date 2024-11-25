@@ -243,7 +243,6 @@ public class GameScreenController {
                 //if parameter is 'false', re-enable the button and view the card to the user
                 if(!disable){
                     button.setDisable(false);
-                    //setImage((Button) button, card);
                 }
                 //show fancy animation for dealing
                 dealAnimation(card, rightStackPane, (Button) button, disable, borderPane);

@@ -124,8 +124,17 @@ public class Animation {
 
             // When animation is finished, remove card from screen
             transition.setOnFinished(e -> {
-                setImage(endLocation, card);
-                borderPane.getChildren().remove(placeholder);
+                // Computer cards set blank
+                if (disable.equals(true)) {
+                    Card blank = new Card("none", 0, "na",
+                            "com/example/groupprojectcardgame/images/Card Folder/1CardBackDesignCardDesigns.png");
+                    setImage(endLocation, blank);
+                }
+                // Player cards shown
+                else {
+                    setImage(endLocation, card);
+                }
+                borderPane.getChildren().remove(placeholder); // Remove the animation card
             });
         });
     }
