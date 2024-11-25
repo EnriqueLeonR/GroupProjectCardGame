@@ -25,6 +25,7 @@ import static com.example.groupprojectcardgame.Card.setImage;
 
 public class GameScreenController {
 
+    //init JavaFX containers and buttons
     @FXML
     private HBox topRow;
 
@@ -46,44 +47,52 @@ public class GameScreenController {
     @FXML
     private Button submit;
 
-    private Deck fullDeck = new Deck(); //reference full card deck
+    //init decks and selected hand array list
+    private final Deck FULLDECK = new Deck(); //reference of full card deck
     private Deck deck = new Deck(); //deck used for game
     private ArrayList<Card> selectedHand = new ArrayList<>(); //selected hand to keep track of cards
 
-    //init players
-    private Player user = new Player("User", 100);
+    //init players and health bars
+    private Player user = new Player("User", 100); //use 100 health for live demo
     private Computer comp = new Computer("CPU", 100);
     private ProgressBar userProgress = new ProgressBar();
     private ProgressBar compProgress = new ProgressBar();
 
+    //init action class to test hands within
+    private final Action action = new Action();
 
+    //init enum game status
     private enum Status{
         START,
         END,
-        P1,
-        P2
+        P1, //user turn
+        P2 //comp turn
     }
-
     private Status gameStatus = Status.START;
 
 
+    /**
+     * starts the game
+     */
     @FXML
     public void initialize() {
 
+        //bind health bars
         userProgress.setProgress(1);
         compProgress.setProgress(1);
 
-        // Resizes the backgroud image to the size of the window ie- allows fullscreen
+        // Resizes the background image to the size of the window ie- allows fullscreen
         imagePane.fitWidthProperty().bind(rootPane.widthProperty());
         imagePane.fitHeightProperty().bind(rootPane.heightProperty());
 
         // Initializes the 5 card buttons to the top and bottom rows
-        Button[] topButtons = addButtons(topRow);
-        Button[] bottomButtons = addButtons(bottomRow);
+        addButtons(topRow);
+        addButtons(bottomRow);
+
+        // add deck button
         addDeck(rightStackPane);
 
-        //dealCards(top); //uncomment when deck is complete
-
+        // create onscreen health bars
         createHealthBars();
 
         //setup submit hand button
@@ -92,33 +101,32 @@ public class GameScreenController {
             testHand(bottomRow);
         });
 
+        //deal cards to both players
         dealCards(topRow, true); //second parameter hides the deck
         dealCards(bottomRow, false);
 
+        //pick the player to start the game
         pickStarter();
-        //gameStatus = Status.P1; //test code
+        if(gameStatus == Status.P1){ //run for user turn
+            turn(user);
+        } else if(gameStatus == Status.P2) { //run for cpu 1 turn
+            turn(comp);
+        }
 
-        //while(gameStatus != Status.END){
-          if(gameStatus == Status.P1){ //run for user turn
-              turn(user);
-          }
-          else if(gameStatus == Status.P2) { //run for cpu 1 turn
-              turn(comp);
-          }
-          // Determines winner and displays the appropriate animation
-          if (user.getHealthPoints() == 0 || comp.getHealthPoints() == 0) {
-              gameStatus = Status.END;
-              if (user.getHealthPoints() > comp.getHealthPoints()) {
-                  announceWinner(user);
-              }
-              else {
-                  announceWinner(comp);
-              }
-          }
-        //}
+        // Determines winner and displays the appropriate animation
+        if (user.getHealthPoints() == 0 || comp.getHealthPoints() == 0) {
+            gameStatus = Status.END;
+            if (user.getHealthPoints() > comp.getHealthPoints()) {
+                announceWinner(user);
+            } else {
+                announceWinner(comp);
+            }
+        }
     }
 
-
+    /**
+     * creates health bars for the players using health instance variable
+     */
     private void createHealthBars() {
         // Create separate containers for health bars
         StackPane computerHealthBarContainer = new StackPane();
@@ -150,9 +158,14 @@ public class GameScreenController {
         playerHealthBarContainer.setTranslateY(bottomRow.getBoundsInParent().getMaxY() + 120); // Move down by 80 pixels
     }
 
-
+    /**
+     * creates disabled deck button on right side of screen
+     * @param location StackPane id to place deck (uses right)
+     */
     public void addDeck(StackPane location) {
-        deck.shuffle();
+        deck.shuffle(); //shuffle the deck before dealing
+
+        //places cards on the deck button for animation purposes
         for (int i = 0; i <= deck.size(); i++) {
             Button cardButton = new Button("Card "); // Representing a card with a button
             cardButton.setPrefSize(80, 120);
@@ -168,14 +181,17 @@ public class GameScreenController {
             cardButton.setGraphic(view);
             cardButton.setStyle("-fx-background-color: transparent;");
 
+            //add card to StackPane
             location.getChildren().add(cardButton);
         }
     }
 
-
-    public Button[] addButtons(HBox location) {
+    /**
+     * adds 5-button-card hands to specified HBox
+     * @param location HBox location to add buttons
+     */
+    public void addButtons(HBox location) {
         // Add 5 cards to the row
-        Button[] buttons = new Button[5];
         for (int i = 1; i <= 5; i++) {
             Button cardButton = new Button("Card " + i); // Representing a card with a button
             cardButton.setPrefSize(80, 120);
@@ -190,72 +206,87 @@ public class GameScreenController {
             view.setFitWidth(cardButton.getPrefWidth());
             cardButton.setGraphic(view);
 
-            //add button to button array
-            buttons[i-1] = cardButton;
-
+            //add select card action to button
             cardButton.setOnAction(actionEvent -> {
-                        selectCard(cardButton);
-                    });
+                selectCard(cardButton);
+            });
 
-            //add button
+            //add button to hand
             location.getChildren().add(cardButton);
         }
-        return buttons;
     }
 
 
-    // Method deals cards to each specific hand/row ie- either the top or bottom row
+    /**
+     * assigns cards to any empty buttons in a hand
+     * @param location HBox hand to deal cards
+     * @param disable if true, cards will be invisible and disabled for the user
+     */
     public void dealCards(HBox location, boolean disable) {
+        //get the buttons at the hand location
         ObservableList<Node> buttons = location.getChildren();
+
+        //for every empty button, draw card and link its variables
         for (Node button : buttons) {
-            if(button.getId().equals("null")) { //for every empty button, add Card vars to button
+            if(button.getId().equals("null")) {
+                //overdraw protection
                 if(deck.size() <= 0){
-                    deck = new Deck(); //this will refill the deck, rarely causes issues
+                    deck = new Deck();
                     deck.shuffle();
                 }
+
+                //draw card and assign id
                 Card card = deck.draw();
-                System.out.print(deck.size()); //testing
                 button.setId(card.getLabel());
                 button.setStyle("-fx-background-color: transparent;");
+
+                //if parameter is 'false', re-enable the button and view the card to the user
                 if(!disable){
                     button.setDisable(false);
-//                    setImage((Button) button, card);
+                    //setImage((Button) button, card);
                 }
+                //show fancy animation for dealing
                 dealAnimation(card, rightStackPane, (Button) button, disable, borderPane);
             }
         }
     }
 
 
-    //method to find the Card associated with the button. Allows user to select/deselect cards
+    /**
+     * Allows the user to select card, deselect card, and submit their hand
+     * @param button Button to become selectable
+     */
     public void selectCard(Button button){
-        Card card = fullDeck.getCard(button.getId());
-        //System.out.println(card.getSrc());
+        Card card = FULLDECK.getCard(button.getId()); //find card linked with button id
+
+        //if the card is already selected, deselect it
         if(selectedHand.contains(card)){
             selectedHand.remove(card);
             button.setStyle("-fx-background-color: transparent;");
-        } else{
+        } else{ //otherwise select the card
             selectedHand.add(card);
             button.setStyle("-fx-border-color: #c2f0ee; -fx-border-width: 5px;");
         }
 
-        if(!selectedHand.isEmpty()){
-            submit.setVisible(true);
-        } else{
-            submit.setVisible(false);
-        }
-        System.out.println(selectedHand); //for testing
+        //if any card is selected, enable submit button
+        submit.setVisible(!selectedHand.isEmpty());
     }
 
-    //method that test selected cards
+
+    /**
+     * takes in selected cards, tests if they are valid, deals damage based on hand, and removes cards from hand
+     * @param location HBox hand to remove and deal cards to
+     */
     public void testHand(HBox location) {
-        Action action = new Action();
+        //pass selected hand and determine validity
         double dmg = action.calculateDamage(selectedHand);
+
+        //OR if one card is played, set damage to its value
         if (selectedHand.size() == 1) {
             dmg = selectedHand.getFirst().getRank();
         }
-        System.out.println(dmg);
 
+        //if the hand is valid, do damage to comp, remove cards, and deal new cards
         if (dmg > 0) {
             double newHealth = comp.getHealthPoints() - dmg;
             if (newHealth < 0) {
@@ -266,17 +297,16 @@ public class GameScreenController {
             comp.updateHealthText();
             compProgress.setProgress(comp.getHealthPoints() / 100);
 
-
-
+            //check if player dealth enough damage to win
             if (comp.getHealthPoints() == 0) {
                 announceWinner(user);
             }
 
-            //if a hand is valid
+            // for every selected button in hand, get its linked card and remove it from hand
             ObservableList<Node> hand = location.getChildren();
             for (Node button : hand) { //find cards in players hand and remove them
-                Card card = fullDeck.getCard(button.getId());
-                if (selectedHand.contains(card)) {
+                Card card = FULLDECK.getCard(button.getId());
+                if (selectedHand.contains(card)) { //delete card
                     button.setStyle("-fx-border-width: 0;");
                     button.setId("null");
                     button.setDisable(true);
@@ -286,68 +316,69 @@ public class GameScreenController {
                 }
             }
 
+            //remove submit button, clear selected hand, and deal new cards
             submit.setVisible(false);
-            selectedHand.clear(); //clear selected cards
-            dealCards(location, false); //deal new cards to player
+            selectedHand.clear();
+            dealCards(location, false);
 
+            //pass turn to computer
             if (gameStatus == Status.P1) {
                 turn(comp);
             }
         }
     }
 
+    /**
+     * picks either the user or computer to start
+     */
     public void pickStarter(){
+        //calculates a random number 0 or 1
         int random = (int)(Math.random()*2);
-        //System.out.println(random);
-        switch (random){
+        switch (random){ //user goes first
             case 0:
                 gameStatus = Status.P1;
-                System.out.println(user.getName()+" starts!");
+                //System.out.println(user.getName()+" starts!");
                 break;
-            case 1:
+            case 1: //comp goes first
                 gameStatus = Status.P2;
-                System.out.println(comp.getName()+ " starts!");
+                //System.out.println(comp.getName()+ " starts!");
                 break;
             default:
                 break;
         }
     }
 
-
+    /**
+     * runs the tests for the computer, deals damage, and removes cards from the comp's hand
+     * @param player current Player turn
+     */
     public void turn(Player player){
+        //check if player's turn, and reinstates game status if needed
         if (player.getName().equals("User")) {
             gameStatus = Status.P1;
             dealCards(bottomRow, false);
-
-        } else {
-            if (comp.getHealthPoints() > 0) {
+        } else { //check for comp's turn
+            if (comp.getHealthPoints() > 0) { //if computer is still in game
                 gameStatus = Status.P2;
-//                dealCards(bottomRow, true);
                 dealCards(topRow, true);
-                System.out.println("comp round"); // for testing
 
                 // convert comp buttons to cards
                 ObservableList<Node> hand = topRow.getChildren();
                 ArrayList<Card> cards = new ArrayList<>();
                 for (int index = 0; index < 5; index++) {
-                    cards.add(fullDeck.getCard(hand.get(index).getId())); // <<
+                    cards.add(FULLDECK.getCard(hand.get(index).getId())); // <<
                 }
-                System.out.println(cards); // returns comp cards for testing
 
                 // pass cards and return hand dmg
-                Action action = new Action();
                 double dmg = action.calculateDamage(cards);
                 user.setHealth(user.getHealthPoints() - dmg);
-                System.out.println(user.getHealthPoints());
                 userProgress.setProgress(user.getHealthPoints()/100);
                 user.updateHealthText();
 
-
                 // remove cards from comp hand
-                System.out.println(cards);
                 ObservableList<Node> top = topRow.getChildren();
                 for (Node button : top) { // find cards in players hand and remove them
-                    Card card = fullDeck.getCard(button.getId());
+                    Card card = FULLDECK.getCard(button.getId());
                     if (cards.contains(card)) {
                         button.setId("null");
                         button.setDisable(true);
@@ -356,44 +387,43 @@ public class GameScreenController {
                         setImage((Button) button, blank);
                     }
                 }
-                dealCards(topRow, true); // for testing
 
-                if (user.getHealthPoints() > 0) {
+                //deal new cards to comp and pass turn to user
+                dealCards(topRow, true);
+                if (user.getHealthPoints() > 0) { //if user is still in game
                     turn(user);
-
-                } else {
+                } else { //otherwise declare comp win
                     announceWinner(comp);
                 }
-            } else {
+            } else { //otherise declare user win
                 announceWinner(user);
             }
         }
     }
 
-    public void updateComputerHealthBar(double damage) {
-        double newHealth = compProgress.getProgress();
-        compProgress.setProgress(newHealth);
-    }
-    public void updateUserHealthBar(double damage) {
-        double newHealth = userProgress.getProgress() - damage;
-        userProgress.setProgress(newHealth);
-    }
-
-
+    /**
+     * starts winner animation and asks user if they want to play again
+     * @param player Player who won the game
+     */
     public void announceWinner(Player player){
-        //change endscreen
         announceAnimation(player.getName(), rootPane);
         restartGame();
     }
 
 
+    /**
+     * creates a restart button that reloads the scene on activation
+     */
     private void restartGame() {
+        //create restart button
         Button restartButton = new Button();
         restartButton.setText("Restart game?");
         restartButton.setPrefWidth(200); // Set the width
         restartButton.setPrefHeight(100);
         rootPane.getChildren().add(restartButton);
         rootPane.setAlignment(restartButton, Pos.TOP_LEFT);
+
+        //set activate to reload the scene
         restartButton.setOnAction(actionEvent -> {
             // Load the Game Screen FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/groupprojectcardgame/GameScreen.fxml"));
